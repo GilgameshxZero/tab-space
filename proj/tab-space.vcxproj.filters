@@ -7,6 +7,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{5f0a92d9-f2ac-45f4-a112-7fa27aa738bc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="simple-web-server">
+      <UniqueIdentifier>{f16de5ce-84ff-4e73-8528-5e10a4da0cbc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.gitignore" />
@@ -32,6 +35,33 @@
     </ClInclude>
     <ClInclude Include="..\src\simple_handler.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\client_http.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\client_https.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\crypto.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\mutex.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\server_http.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\server_https.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\status_code.hpp">
+      <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Simple-Web-Server-v3.0.2\utility.hpp">
+      <Filter>simple-web-server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
