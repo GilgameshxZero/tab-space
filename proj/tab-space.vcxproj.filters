@@ -28,6 +28,9 @@
     <ClCompile Include="..\src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\webserver.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\simple_app.h">
@@ -64,6 +67,9 @@
       <Filter>simple-web-server</Filter>
     </ClInclude>
     <ClInclude Include="..\src\main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\webserver.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

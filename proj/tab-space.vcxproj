@@ -27,6 +27,7 @@
     <ClCompile Include="..\src\simple_app.cc" />
     <ClCompile Include="..\src\simple_handler.cc" />
     <ClCompile Include="..\src\simple_handler_win.cc" />
+    <ClCompile Include="..\src\webserver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\simple_app.h" />
     <ClInclude Include="..\src\simple_handler.h" />
+    <ClInclude Include="..\src\webserver.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

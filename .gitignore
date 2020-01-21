@@ -12,6 +12,7 @@
 # Chrome Embedded Framework
 /cef_binary_*/
 /proj/GPUCache/
+/proj/enc_temp_folder/
 
 # Simple Web Server
 /Simple-Web-Server-*/
