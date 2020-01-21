@@ -23,7 +23,7 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\cefsimple_win.cc" />
+    <ClCompile Include="..\src\main.cc" />
     <ClCompile Include="..\src\simple_app.cc" />
     <ClCompile Include="..\src\simple_handler.cc" />
     <ClCompile Include="..\src\simple_handler_win.cc" />
@@ -88,32 +88,32 @@
     <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\boost_1_72_0;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\boost_1_72_0\libs;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\boost_1_72_0;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\boost_1_72_0\libs;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\boost_1_72_0;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\boost_1_72_0\libs;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
-    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)..\boost_1_72_0;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\boost_1_72_0\libs;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>

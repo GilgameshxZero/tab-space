@@ -7,9 +7,10 @@
 
 # Chrome Embedded Framework
 /cef_binary_*/
-
-# TODO: move this
 /proj/GPUCache/
 
 # Simple Web Server
 /Simple-Web-Server-*/
+
+# Boost (symlinked from install location, or local)
+/boost_*/

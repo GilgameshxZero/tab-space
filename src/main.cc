@@ -13,6 +13,7 @@
 // Uncomment this line to manually enable sandbox support.
 // #define CEF_USE_SANDBOX 1
 
+// Using sandbox sometimes results in GPU crashes/blank screen.
 #if defined(CEF_USE_SANDBOX)
 // The cef_sandbox.lib static library may not link successfully with all VS
 // versions.

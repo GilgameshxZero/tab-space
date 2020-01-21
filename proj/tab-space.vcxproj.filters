@@ -13,9 +13,6 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\cefsimple_win.cc">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\simple_app.cc">
       <Filter>src</Filter>
     </ClCompile>
@@ -23,6 +20,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\simple_handler_win.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cc">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
