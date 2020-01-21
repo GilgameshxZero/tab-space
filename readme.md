@@ -35,3 +35,11 @@ in the Boost install directory. If Boost is already installed on the system, one
 ### Simple Web Server
 
 `tab-space` uses the Simple Web Server by `eidheim`, `v3.0.2`. Download the relevant bundle from <https://gitlab.com/eidheim/Simple-Web-Server/-/releases>, and unzip it into `./Simple-Web-Server-*/`.
+
+### HTTP Multiplexer
+
+`tab-space` is deployed at <https://tab.gilgamesh.cc> via [http-mux](https://github.com/GilgameshxZero/http-mux) running on an AWS EC2 instance. The relevant tunnelling command from the `tab-space` server is
+
+```bash
+ssh -p 2222 -R tab.gilgamesh.cc:80:127.0.0.1:8080 gilgamesh.cc
+```
