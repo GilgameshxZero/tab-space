@@ -5,9 +5,8 @@
 **/.vs/
 **.user
 
-# Binaries
-/bin/
-/obj/
-
 # Chrome Embedded Framework
 /cef_binary_*/
+
+# Simple Web Server
+/Simple-Web-Server-*/
