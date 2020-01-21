@@ -23,14 +23,14 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\cefsimple_win.cc" />
-    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.cc" />
-    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.cc" />
-    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler_win.cc" />
+    <ClCompile Include="..\src\cefsimple_win.cc" />
+    <ClCompile Include="..\src\simple_app.cc" />
+    <ClCompile Include="..\src\simple_handler.cc" />
+    <ClCompile Include="..\src\simple_handler_win.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.h" />
-    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.h" />
+    <ClInclude Include="..\src\simple_app.h" />
+    <ClInclude Include="..\src\simple_handler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -89,7 +89,7 @@
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -97,7 +97,7 @@
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -105,7 +105,7 @@
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -113,7 +113,7 @@
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)</TargetName>
     <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>
