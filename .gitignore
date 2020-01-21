@@ -1,8 +1,13 @@
+# Visual Studio Code
 **/.vscode/
-**/.vs/
 
+# Visual Studio
+**/.vs/
 **.user
 
+# Binaries
 /bin/
-/cef/
 /obj/
+
+# Chrome Embedded Framework
+/cef_binary_*/

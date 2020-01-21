@@ -19,102 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\rc\cefsimple.ico" />
-    <Image Include="..\rc\small.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\rc\cefsimple.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\cefsimple_win.cc" />
-    <ClCompile Include="..\src\simple_app.cc" />
-    <ClCompile Include="..\src\simple_handler.cc" />
-    <ClCompile Include="..\src\simple_handler_win.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\cef\include\cef_accessibility_handler.h" />
-    <ClInclude Include="..\cef\include\cef_api_hash.h" />
-    <ClInclude Include="..\cef\include\cef_app.h" />
-    <ClInclude Include="..\cef\include\cef_auth_callback.h" />
-    <ClInclude Include="..\cef\include\cef_base.h" />
-    <ClInclude Include="..\cef\include\cef_browser.h" />
-    <ClInclude Include="..\cef\include\cef_browser_process_handler.h" />
-    <ClInclude Include="..\cef\include\cef_callback.h" />
-    <ClInclude Include="..\cef\include\cef_client.h" />
-    <ClInclude Include="..\cef\include\cef_command_line.h" />
-    <ClInclude Include="..\cef\include\cef_config.h" />
-    <ClInclude Include="..\cef\include\cef_context_menu_handler.h" />
-    <ClInclude Include="..\cef\include\cef_cookie.h" />
-    <ClInclude Include="..\cef\include\cef_crash_util.h" />
-    <ClInclude Include="..\cef\include\cef_dialog_handler.h" />
-    <ClInclude Include="..\cef\include\cef_display_handler.h" />
-    <ClInclude Include="..\cef\include\cef_dom.h" />
-    <ClInclude Include="..\cef\include\cef_download_handler.h" />
-    <ClInclude Include="..\cef\include\cef_download_item.h" />
-    <ClInclude Include="..\cef\include\cef_drag_data.h" />
-    <ClInclude Include="..\cef\include\cef_drag_handler.h" />
-    <ClInclude Include="..\cef\include\cef_extension.h" />
-    <ClInclude Include="..\cef\include\cef_extension_handler.h" />
-    <ClInclude Include="..\cef\include\cef_file_util.h" />
-    <ClInclude Include="..\cef\include\cef_find_handler.h" />
-    <ClInclude Include="..\cef\include\cef_focus_handler.h" />
-    <ClInclude Include="..\cef\include\cef_frame.h" />
-    <ClInclude Include="..\cef\include\cef_image.h" />
-    <ClInclude Include="..\cef\include\cef_jsdialog_handler.h" />
-    <ClInclude Include="..\cef\include\cef_keyboard_handler.h" />
-    <ClInclude Include="..\cef\include\cef_life_span_handler.h" />
-    <ClInclude Include="..\cef\include\cef_load_handler.h" />
-    <ClInclude Include="..\cef\include\cef_menu_model.h" />
-    <ClInclude Include="..\cef\include\cef_menu_model_delegate.h" />
-    <ClInclude Include="..\cef\include\cef_navigation_entry.h" />
-    <ClInclude Include="..\cef\include\cef_origin_whitelist.h" />
-    <ClInclude Include="..\cef\include\cef_pack_resources.h" />
-    <ClInclude Include="..\cef\include\cef_pack_strings.h" />
-    <ClInclude Include="..\cef\include\cef_parser.h" />
-    <ClInclude Include="..\cef\include\cef_path_util.h" />
-    <ClInclude Include="..\cef\include\cef_print_handler.h" />
-    <ClInclude Include="..\cef\include\cef_print_settings.h" />
-    <ClInclude Include="..\cef\include\cef_process_message.h" />
-    <ClInclude Include="..\cef\include\cef_process_util.h" />
-    <ClInclude Include="..\cef\include\cef_render_handler.h" />
-    <ClInclude Include="..\cef\include\cef_render_process_handler.h" />
-    <ClInclude Include="..\cef\include\cef_request.h" />
-    <ClInclude Include="..\cef\include\cef_request_callback.h" />
-    <ClInclude Include="..\cef\include\cef_request_context.h" />
-    <ClInclude Include="..\cef\include\cef_request_context_handler.h" />
-    <ClInclude Include="..\cef\include\cef_request_handler.h" />
-    <ClInclude Include="..\cef\include\cef_resource_bundle.h" />
-    <ClInclude Include="..\cef\include\cef_resource_bundle_handler.h" />
-    <ClInclude Include="..\cef\include\cef_resource_handler.h" />
-    <ClInclude Include="..\cef\include\cef_resource_request_handler.h" />
-    <ClInclude Include="..\cef\include\cef_response.h" />
-    <ClInclude Include="..\cef\include\cef_response_filter.h" />
-    <ClInclude Include="..\cef\include\cef_sandbox_win.h" />
-    <ClInclude Include="..\cef\include\cef_scheme.h" />
-    <ClInclude Include="..\cef\include\cef_server.h" />
-    <ClInclude Include="..\cef\include\cef_ssl_info.h" />
-    <ClInclude Include="..\cef\include\cef_ssl_status.h" />
-    <ClInclude Include="..\cef\include\cef_stream.h" />
-    <ClInclude Include="..\cef\include\cef_string_visitor.h" />
-    <ClInclude Include="..\cef\include\cef_task.h" />
-    <ClInclude Include="..\cef\include\cef_thread.h" />
-    <ClInclude Include="..\cef\include\cef_trace.h" />
-    <ClInclude Include="..\cef\include\cef_urlrequest.h" />
-    <ClInclude Include="..\cef\include\cef_v8.h" />
-    <ClInclude Include="..\cef\include\cef_values.h" />
-    <ClInclude Include="..\cef\include\cef_version.h" />
-    <ClInclude Include="..\cef\include\cef_waitable_event.h" />
-    <ClInclude Include="..\cef\include\cef_web_plugin.h" />
-    <ClInclude Include="..\cef\include\cef_x509_certificate.h" />
-    <ClInclude Include="..\cef\include\cef_xml_reader.h" />
-    <ClInclude Include="..\cef\include\cef_zip_reader.h" />
-    <ClInclude Include="..\rc\resource.h" />
-    <ClInclude Include="..\src\simple_app.h" />
-    <ClInclude Include="..\src\simple_handler.h" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\.gitignore" />
     <None Include="..\readme.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -172,32 +81,32 @@
     <OutDir>$(SolutionDir)..\bin\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)..\bin\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
     <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>
@@ -231,7 +140,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -248,7 +157,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
