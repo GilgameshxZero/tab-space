@@ -5,6 +5,10 @@
 **/.vs/
 **.user
 
+# Binaries
+/bin/
+/obj/
+
 # Chrome Embedded Framework
 /cef_binary_*/
 /proj/GPUCache/
