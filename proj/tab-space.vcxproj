@@ -23,7 +23,7 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cc" />
+    <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\simple_app.cc" />
     <ClCompile Include="..\src\simple_handler.cc" />
     <ClCompile Include="..\src\simple_handler_win.cc" />
@@ -38,6 +38,7 @@
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\server_https.hpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\status_code.hpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\utility.hpp" />
+    <ClInclude Include="..\src\main.h" />
     <ClInclude Include="..\src\simple_app.h" />
     <ClInclude Include="..\src\simple_handler.h" />
   </ItemGroup>
