@@ -1,0 +1,8 @@
+**/.vscode/
+**/.vs/
+
+**.user
+
+/bin/
+/cef/
+/obj/
