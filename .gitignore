@@ -8,5 +8,8 @@
 # Chrome Embedded Framework
 /cef_binary_*/
 
+# TODO: move this
+/proj/GPUCache/
+
 # Simple Web Server
 /Simple-Web-Server-*/

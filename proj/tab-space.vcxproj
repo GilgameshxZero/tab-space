@@ -23,7 +23,14 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\cefsimple_win.cc" />
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.cc" />
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.cc" />
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler_win.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.h" />
+    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -78,35 +85,35 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Debug;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <OutDir>$(SolutionDir)..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\obj\$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)-$(Platform)-$(Configuration)</TargetName>
-    <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <TargetName>$(ProjectName)</TargetName>
+    <IncludePath>$(SolutionDir)..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\build\libcef_dll_wrapper\Release;C:\Users\yanga\main\active\monochrome\aeternum\tab-space\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|Win32'">
     <ClCompile>
@@ -114,10 +121,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\Debug\libcef.lib;..\..\libcef_dll_wrapper\Debug\libcef_dll_wrapper.lib;comctl32.lib;rpcrt4.lib;shlwapi.lib;ws2_32.lib;..\..\..\Debug\cef_sandbox.lib;dbghelp.lib;Delayimp.lib;PowrProf.lib;Propsys.lib;psapi.lib;SetupAPI.lib;version.lib;wbemuuid.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='debug|x64'">
@@ -126,10 +135,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\Debug\libcef.lib;..\..\libcef_dll_wrapper\Debug\libcef_dll_wrapper.lib;comctl32.lib;rpcrt4.lib;shlwapi.lib;ws2_32.lib;..\..\..\Debug\cef_sandbox.lib;dbghelp.lib;Delayimp.lib;PowrProf.lib;Propsys.lib;psapi.lib;SetupAPI.lib;version.lib;wbemuuid.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|Win32'">
@@ -143,10 +154,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>NotSet</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\Release\libcef.lib;..\..\libcef_dll_wrapper\Release\libcef_dll_wrapper.lib;comctl32.lib;rpcrt4.lib;shlwapi.lib;ws2_32.lib;..\..\..\Release\cef_sandbox.lib;dbghelp.lib;Delayimp.lib;PowrProf.lib;Propsys.lib;psapi.lib;SetupAPI.lib;version.lib;wbemuuid.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='release|x64'">
@@ -160,10 +172,11 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>NotSet</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>..\..\..\Release\libcef.lib;..\..\libcef_dll_wrapper\Release\libcef_dll_wrapper.lib;comctl32.lib;rpcrt4.lib;shlwapi.lib;ws2_32.lib;..\..\..\Release\cef_sandbox.lib;dbghelp.lib;Delayimp.lib;PowrProf.lib;Propsys.lib;psapi.lib;SetupAPI.lib;version.lib;wbemuuid.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

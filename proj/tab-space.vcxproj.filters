@@ -13,8 +13,25 @@
     <None Include="..\readme.md" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main.cpp">
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\cefsimple_win.cc">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler_win.cc">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_app.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64\tests\cefsimple\simple_handler.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
