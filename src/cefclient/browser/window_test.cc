@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "tests/cefclient/browser/window_test.h"
+#include "../../cefclient/browser/window_test.h"
 
 #include <algorithm>
 #include <sstream>
@@ -11,20 +11,20 @@
 
 #include "include/base/cef_bind.h"
 #include "include/wrapper/cef_stream_resource_handler.h"
-#include "tests/cefclient/browser/main_context.h"
-#include "tests/cefclient/browser/test_runner.h"
-#include "tests/cefclient/browser/window_test_runner.h"
+#include "../../cefclient/browser/main_context.h"
+#include "../../cefclient/browser/test_runner.h"
+#include "../../cefclient/browser/window_test_runner.h"
 
 #if defined(OS_WIN) || defined(OS_LINUX)
-#include "tests/cefclient/browser/window_test_runner_views.h"
+#include "../../cefclient/browser/window_test_runner_views.h"
 #endif
 
 #if defined(OS_WIN)
-#include "tests/cefclient/browser/window_test_runner_win.h"
+#include "../../cefclient/browser/window_test_runner_win.h"
 #elif defined(OS_LINUX)
-#include "tests/cefclient/browser/window_test_runner_gtk.h"
+#include "../../cefclient/browser/window_test_runner_gtk.h"
 #elif defined(OS_MACOSX)
-#include "tests/cefclient/browser/window_test_runner_mac.h"
+#include "../../cefclient/browser/window_test_runner_mac.h"
 #endif
 
 namespace client {

@@ -14,7 +14,7 @@
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
 
-#include "tests/cefclient/browser/osr_d3d11_win.h"
+#include "../../cefclient/browser/osr_d3d11_win.h"
 
 #include <iomanip>  // For std::setw.
 
@@ -26,7 +26,7 @@
 
 #include "include/base/cef_logging.h"
 #include "include/internal/cef_string.h"
-#include "tests/shared/browser/util_win.h"
+#include "../../shared/browser/util_win.h"
 
 namespace client {
 namespace d3d11 {

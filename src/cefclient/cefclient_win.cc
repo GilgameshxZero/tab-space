@@ -7,16 +7,16 @@
 #include "include/base/cef_scoped_ptr.h"
 #include "include/cef_command_line.h"
 #include "include/cef_sandbox_win.h"
-#include "tests/cefclient/browser/main_context_impl.h"
-#include "tests/cefclient/browser/main_message_loop_multithreaded_win.h"
-#include "tests/cefclient/browser/root_window_manager.h"
-#include "tests/cefclient/browser/test_runner.h"
-#include "tests/shared/browser/client_app_browser.h"
-#include "tests/shared/browser/main_message_loop_external_pump.h"
-#include "tests/shared/browser/main_message_loop_std.h"
-#include "tests/shared/common/client_app_other.h"
-#include "tests/shared/common/client_switches.h"
-#include "tests/shared/renderer/client_app_renderer.h"
+#include "../cefclient/browser/main_context_impl.h"
+#include "../cefclient/browser/main_message_loop_multithreaded_win.h"
+#include "../cefclient/browser/root_window_manager.h"
+#include "../cefclient/browser/test_runner.h"
+#include "../shared/browser/client_app_browser.h"
+#include "../shared/browser/main_message_loop_external_pump.h"
+#include "../shared/browser/main_message_loop_std.h"
+#include "../shared/common/client_app_other.h"
+#include "../shared/common/client_switches.h"
+#include "../shared/renderer/client_app_renderer.h"
 
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
 // automatically if using the required compiler version. Pass -DUSE_SANDBOX=OFF
@@ -31,7 +31,7 @@
 #endif
 
 namespace client {
-  // GILGAMESH: Name the namespace for prototyping.
+  // tab-space: Name the namespace for prototyping.
   namespace RunMain {
 
     int RunMain(HINSTANCE hInstance, int nCmdShow) {
@@ -125,7 +125,7 @@ namespace client {
   }  // namespace
 }  // namespace client
 
-// GILGAMESH: Disabled for another entry point in main.
+// tab-space: Disabled for another entry point in main.
 // Program entry point function.
 // int APIENTRY wWinMain(HINSTANCE hInstance,
 //   HINSTANCE hPrevInstance,

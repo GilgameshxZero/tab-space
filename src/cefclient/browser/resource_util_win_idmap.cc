@@ -4,7 +4,7 @@
 
 #include <cstring>
 
-#include "tests/cefclient/browser/resource.h"
+#include "../../cefclient/browser/resource.h"
 
 namespace client {
 

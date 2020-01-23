@@ -6,8 +6,8 @@
 #define CEF_TESTS_CEFCLIENT_BROWSER_OSR_RENDER_HANDLER_WIN_GL_H_
 #pragma once
 
-#include "tests/cefclient/browser/osr_render_handler_win.h"
-#include "tests/cefclient/browser/osr_renderer.h"
+#include "../../cefclient/browser/osr_render_handler_win.h"
+#include "../../cefclient/browser/osr_renderer.h"
 
 namespace client {
 

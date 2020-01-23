@@ -6,9 +6,9 @@
 #define CEF_TESTS_CEFCLIENT_BROWSER_OSR_RENDER_HANDLER_WIN_D3D11_H_
 #pragma once
 
-#include "tests/cefclient/browser/osr_d3d11_win.h"
-#include "tests/cefclient/browser/osr_render_handler_win.h"
-#include "tests/cefclient/browser/osr_renderer_settings.h"
+#include "../../cefclient/browser/osr_d3d11_win.h"
+#include "../../cefclient/browser/osr_render_handler_win.h"
+#include "../../cefclient/browser/osr_renderer_settings.h"
 
 namespace client {
 

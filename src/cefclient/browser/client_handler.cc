@@ -2,7 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
-#include "tests/cefclient/browser/client_handler.h"
+#include "../../cefclient/browser/client_handler.h"
 
 #include <stdio.h>
 #include <algorithm>
@@ -17,12 +17,12 @@
 #include "include/cef_ssl_status.h"
 #include "include/cef_x509_certificate.h"
 #include "include/wrapper/cef_closure_task.h"
-#include "tests/cefclient/browser/main_context.h"
-#include "tests/cefclient/browser/root_window_manager.h"
-#include "tests/cefclient/browser/test_runner.h"
-#include "tests/shared/browser/extension_util.h"
-#include "tests/shared/browser/resource_util.h"
-#include "tests/shared/common/client_switches.h"
+#include "../../cefclient/browser/main_context.h"
+#include "../../cefclient/browser/root_window_manager.h"
+#include "../../cefclient/browser/test_runner.h"
+#include "../../shared/browser/extension_util.h"
+#include "../../shared/browser/resource_util.h"
+#include "../../shared/common/client_switches.h"
 
 namespace client {
 
@@ -431,7 +431,7 @@ bool ClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
     fclose(file);
 
     if (first_console_message_) {
-      // GILGAMESH: Disabled alert for easier automation.
+      // tab-space: Disabled alert for easier automation.
       // test_runner::Alert(
       //   browser, "Console messages written to \"" + console_log_file_ + "\"");
       first_console_message_ = false;
