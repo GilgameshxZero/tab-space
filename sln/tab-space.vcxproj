@@ -43,13 +43,13 @@
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='debug|x64'">..\bin\debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='debug|x64'">..\obj\debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">cefclient</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='debug|x64'">tab-space</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='debug|x64'">false</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='release|x64'">..\bin\release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='release|x64'">..\obj\release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='release|x64'">cefclient</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='release|x64'">tab-space</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='release|x64'">false</GenerateManifest>
@@ -99,7 +99,7 @@
     <PostBuildEvent>
       <Message>Adding manifest...																</Message>
       <Command>setlocal
-mt.exe -nologo -manifest "../src/cefclient/resources/win/cefclient.exe.manifest" "../src/cefclient/resources/win/compatibility.manifest" -outputresource:"../bin/debug/cefclient.exe";#1
+mt.exe -nologo -manifest "../src/cefclient/resources/win/cefclient.exe.manifest" "../src/cefclient/resources/win/compatibility.manifest" -outputresource:"../bin/debug/tab-space.exe";#1
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -304,7 +304,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <PostBuildEvent>
       <Message>Adding manifest...																</Message>
       <Command>setlocal
-mt.exe -nologo -manifest "../src/cefclient/resources/win/cefclient.exe.manifest" "../src/cefclient/resources/win/compatibility.manifest" -outputresource:"../bin/release/cefclient.exe";#1
+mt.exe -nologo -manifest "../src/cefclient/resources/win/cefclient.exe.manifest" "../src/cefclient/resources/win/compatibility.manifest" -outputresource:"../bin/release/tab-space.exe";#1
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
