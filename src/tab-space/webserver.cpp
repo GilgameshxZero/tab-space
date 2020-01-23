@@ -14,6 +14,9 @@
 #include "crypto.hpp"
 #endif
 
+// Getting current executable path.
+#include <boost/dll.hpp>
+
 using namespace std;
 // Added for the json-example:
 using namespace boost::property_tree;
@@ -46,7 +49,8 @@ void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer
 	// Can for instance be used to retrieve an HTML 5 client that uses REST-resources on this server
 	try {
 		// Previously was using canonical, but that didn't seem to work.
-		auto web_root_path = boost::filesystem::absolute("../static");
+		// Using executable path to avoid Visual Studio debugging issues.
+		auto web_root_path = boost::filesystem::absolute(boost::dll::program_location().parent_path() / "../../static");
 		auto path = boost::filesystem::absolute(web_root_path / request->path);
 
 		// Check if path is within web_root_path

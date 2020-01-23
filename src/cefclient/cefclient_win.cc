@@ -106,7 +106,8 @@ namespace client {
       window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
 
       // Create the first window.
-      context->GetRootWindowManager()->CreateRootWindow(window_config);
+      // tab-space: Disable default window and wait for web request.
+      // context->GetRootWindowManager()->CreateRootWindow(window_config);
 
       // Run the message loop. This will block until Quit() is called by the
       // RootWindowManager after all windows have been destroyed.

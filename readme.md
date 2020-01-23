@@ -51,3 +51,12 @@ in the Boost install directory. If Boost is already installed on the system, one
 ```bash
 ssh -p 2222 -R tab.gilgamesh.cc:80:127.0.0.1:61001 gilgamesh.cc
 ```
+
+## Endpoints
+
+`tab-space` reveals several endpoints for the web client.
+
+Endpoint|Usage
+-|-
+`/`|Homepage
+`/info`|Testing endpoint. Should return some basic information about the HTTP multiplexer.
