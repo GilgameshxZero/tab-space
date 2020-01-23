@@ -8,7 +8,7 @@ We refer to the directory containing this `readme` as the *root directory* of th
 
 ### Visual Studio 2019
 
-`tab-space` uses Visual Studio 2019 as an IDE. The solution file is located under `./proj/`. The project file includes the relevant headers, DLLs, and LIBs already for the build version of the dependencies of `tab-space`. However, when upgrading, the paths to these files may change and need to be updated.
+`tab-space` uses Visual Studio 2019 as an IDE. The solution and project files are located under `./sln/`. The project file includes the relevant headers, DLLs, and LIBs already for the build version of the dependencies of `tab-space`. However, when upgrading, the paths to these files may change and need to be updated.
 
 ### Chromium Embedded Framework
 
