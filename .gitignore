@@ -11,11 +11,14 @@
 
 # Chrome Embedded Framework
 /cef_binary_*/
-/proj/GPUCache/
-/proj/enc_temp_folder/
 
 # Simple Web Server
 /Simple-Web-Server-*/
 
 # Boost (symlinked from install location, or local)
 /boost_*/
+
+# Runtime
+**.log
+/sln/GPUCache/
+/sln/enc_temp_folder/

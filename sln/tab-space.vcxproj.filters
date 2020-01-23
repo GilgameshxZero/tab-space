@@ -205,11 +205,14 @@
     <ClCompile Include="..\src\shared\browser\util_win.cc">
       <Filter>shared\browser</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tab-space\cefclient_win.cc">
-      <Filter>tab-space</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tab-space\webserver.cpp">
       <Filter>tab-space</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tab-space\main.cpp">
+      <Filter>tab-space</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cefclient\cefclient_win.cc">
+      <Filter>cefclient</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,6 +440,9 @@
     </ClInclude>
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\utility.hpp">
       <Filter>simple-web-server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\cefclient_win.h">
+      <Filter>tab-space</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

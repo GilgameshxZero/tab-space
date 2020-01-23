@@ -10,6 +10,10 @@ We refer to the directory containing this `readme` as the *root directory* of th
 
 `tab-space` uses Visual Studio 2019 as an IDE. The solution and project files are located under `./sln/`. The project file includes the relevant headers, DLLs, and LIBs already for the build version of the dependencies of `tab-space`. However, when upgrading, the paths to these files may change and need to be updated.
 
+#### Debug
+
+Without `libcef.dll.pdb`, debug builds are pretty useless. So, always build for release.
+
 ### Chromium Embedded Framework
 
 `tab-space` uses the Chromium Embedded Framework (CEF). We do not use sandboxing as it is unreliable on different hardware. Download the relevant binary bundle from <http://opensource.spotify.com/cefbuilds/index.html>. The project builds are based on `cef_binary_79.1.31+gfc9ef34+chromium-79.0.3945.117_windows64.tar.bz2`. Unzip the bundle into `./cef_binary_*/` and `cd` into the directory.

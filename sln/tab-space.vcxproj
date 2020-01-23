@@ -261,7 +261,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ImportLibrary>../bin/debug/cefclient.lib</ImportLibrary>
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDataBaseFile>../bin/debug/cefclient.pdb</ProgramDataBaseFile>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>NotSet</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -466,7 +466,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ImportLibrary>../bin/release/cefclient.lib</ImportLibrary>
       <LargeAddressAware>true</LargeAddressAware>
       <ProgramDataBaseFile>../bin/release/cefclient.pdb</ProgramDataBaseFile>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>NotSet</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -474,7 +474,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cefclient\browser\binding_test.cc" />
-    <ClCompile Include="..\src\tab-space\cefclient_win.cc" />
+    <ClCompile Include="..\src\cefclient\cefclient_win.cc" />
+    <ClCompile Include="..\src\tab-space\main.cpp" />
     <ClCompile Include="..\src\tab-space\webserver.cpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\client_http.hpp" />
@@ -570,6 +571,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\cefclient\renderer\performance_test_tests.cc" />
     <ClCompile Include="..\src\shared\renderer\client_app_renderer.cc" />
     <ClInclude Include="..\src\shared\renderer\client_app_renderer.h" />
+    <ClInclude Include="..\src\tab-space\cefclient_win.h" />
     <ClInclude Include="..\src\tab-space\webserver.h" />
     <None Include="..\src\cefclient\resources\binding.html" />
     <None Include="..\src\cefclient\resources\dialogs.html" />
