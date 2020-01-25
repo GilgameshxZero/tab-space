@@ -15,77 +15,78 @@
 
 namespace client {
 
-// Used to store global context in the browser process.
-class MainContextImpl : public MainContext {
- public:
-  MainContextImpl(CefRefPtr<CefCommandLine> command_line,
-                  bool terminate_when_all_windows_closed);
+	// Used to store global context in the browser process.
+	class MainContextImpl : public MainContext {
+	public:
+		MainContextImpl(CefRefPtr<CefCommandLine> command_line,
+			bool terminate_when_all_windows_closed);
 
-  // MainContext members.
-  std::string GetConsoleLogPath() OVERRIDE;
-  std::string GetDownloadPath(const std::string& file_name) OVERRIDE;
-  std::string GetAppWorkingDirectory() OVERRIDE;
-  std::string GetMainURL() OVERRIDE;
-  cef_color_t GetBackgroundColor() OVERRIDE;
-  bool UseViews() OVERRIDE;
-  bool UseWindowlessRendering() OVERRIDE;
-  bool TouchEventsEnabled() OVERRIDE;
-  void PopulateSettings(CefSettings* settings) OVERRIDE;
-  void PopulateBrowserSettings(CefBrowserSettings* settings) OVERRIDE;
-  void PopulateOsrSettings(OsrRendererSettings* settings) OVERRIDE;
-  RootWindowManager* GetRootWindowManager() OVERRIDE;
+		// tab-space: Allow deletion via any method.
+		// Allow deletion via scoped_ptr only.
+		// friend struct base::DefaultDeleter<MainContextImpl>;
 
-  // Initialize CEF and associated main context state. This method must be
-  // called on the same thread that created this object.
-  bool Initialize(const CefMainArgs& args,
-                  const CefSettings& settings,
-                  CefRefPtr<CefApp> application,
-                  void* windows_sandbox_info);
+		~MainContextImpl();
 
-  // Shut down CEF and associated context state. This method must be called on
-  // the same thread that created this object.
-  void Shutdown();
+		// MainContext members.
+		std::string GetConsoleLogPath() OVERRIDE;
+		std::string GetDownloadPath(const std::string& file_name) OVERRIDE;
+		std::string GetAppWorkingDirectory() OVERRIDE;
+		std::string GetMainURL() OVERRIDE;
+		cef_color_t GetBackgroundColor() OVERRIDE;
+		bool UseViews() OVERRIDE;
+		bool UseWindowlessRendering() OVERRIDE;
+		bool TouchEventsEnabled() OVERRIDE;
+		void PopulateSettings(CefSettings* settings) OVERRIDE;
+		void PopulateBrowserSettings(CefBrowserSettings* settings) OVERRIDE;
+		void PopulateOsrSettings(OsrRendererSettings* settings) OVERRIDE;
+		RootWindowManager* GetRootWindowManager() OVERRIDE;
 
- private:
-  // Allow deletion via scoped_ptr only.
-  friend struct base::DefaultDeleter<MainContextImpl>;
+		// Initialize CEF and associated main context state. This method must be
+		// called on the same thread that created this object.
+		bool Initialize(const CefMainArgs& args,
+			const CefSettings& settings,
+			CefRefPtr<CefApp> application,
+			void* windows_sandbox_info);
 
-  ~MainContextImpl();
+		// Shut down CEF and associated context state. This method must be called on
+		// the same thread that created this object.
+		void Shutdown();
 
-  // Returns true if the context is in a valid state (initialized and not yet
-  // shut down).
-  bool InValidState() const { return initialized_ && !shutdown_; }
+	private:
+		// Returns true if the context is in a valid state (initialized and not yet
+		// shut down).
+		bool InValidState() const { return initialized_ && !shutdown_; }
 
-  CefRefPtr<CefCommandLine> command_line_;
-  const bool terminate_when_all_windows_closed_;
+		CefRefPtr<CefCommandLine> command_line_;
+		const bool terminate_when_all_windows_closed_;
 
-  // Track context state. Accessing these variables from multiple threads is
-  // safe because only a single thread will exist at the time that they're set
-  // (during context initialization and shutdown).
-  bool initialized_;
-  bool shutdown_;
+		// Track context state. Accessing these variables from multiple threads is
+		// safe because only a single thread will exist at the time that they're set
+		// (during context initialization and shutdown).
+		bool initialized_;
+		bool shutdown_;
 
-  std::string main_url_;
-  cef_color_t background_color_;
-  cef_color_t browser_background_color_;
-  bool use_windowless_rendering_;
-  int windowless_frame_rate_;
-  bool use_views_;
-  bool touch_events_enabled_;
+		std::string main_url_;
+		cef_color_t background_color_;
+		cef_color_t browser_background_color_;
+		bool use_windowless_rendering_;
+		int windowless_frame_rate_;
+		bool use_views_;
+		bool touch_events_enabled_;
 
-  scoped_ptr<RootWindowManager> root_window_manager_;
+		scoped_ptr<RootWindowManager> root_window_manager_;
 
 #if defined(OS_WIN)
-  bool shared_texture_enabled_;
+		bool shared_texture_enabled_;
 #endif
 
-  bool external_begin_frame_enabled_;
+		bool external_begin_frame_enabled_;
 
-  // Used to verify that methods are called on the correct thread.
-  base::ThreadChecker thread_checker_;
+		// Used to verify that methods are called on the correct thread.
+		base::ThreadChecker thread_checker_;
 
-  DISALLOW_COPY_AND_ASSIGN(MainContextImpl);
-};
+		DISALLOW_COPY_AND_ASSIGN(MainContextImpl);
+	};
 
 }  // namespace client
 

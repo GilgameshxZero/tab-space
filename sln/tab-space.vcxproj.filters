@@ -444,6 +444,9 @@
     <ClInclude Include="..\src\tab-space\cefclient_win.h">
       <Filter>tab-space</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\tab-space\cef-info.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\src\cefclient\resources\logo.png">
