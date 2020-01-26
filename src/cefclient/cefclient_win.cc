@@ -118,6 +118,7 @@ namespace client {
 			window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
 
 			// Create the first window.
+			// tab-space: TODO: Create first window so that CEF doesn't shut down spuriously.
 			// tab-space: Logging.
 			std::cout << "Creating first window..." << std::endl;
 			// tab-space: This is only called once, even with multiple processes.

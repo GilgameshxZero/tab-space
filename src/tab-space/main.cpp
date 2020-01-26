@@ -14,7 +14,7 @@
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
 
-int webserver(CefInfo &cefInfo) {
+int webserverStart(CefInfo &cefInfo) {
 	std::cout << "Starting webserver thread..." << std::endl;
 
 	HttpServer httpServer;
@@ -26,16 +26,16 @@ int webserver(CefInfo &cefInfo) {
 	return 0;
 }
 
-int mainLogic(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
+int mainLogicStart(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
 	std::cout << "Starting main logic thread..." << std::endl;
 
-	//// Take commands in main thread.
+	// Take commands in main thread.
 	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	client::RootWindowConfig window_config;
 	window_config.always_on_top = false;
 	window_config.with_controls = false;
 	window_config.with_osr = false;
-	std::cout << "Launching root window...";
+	std::cout << "Launching root window..." << std::endl;
 	cefInfo.context->GetRootWindowManager()->CreateRootWindow(window_config);
 
 	std::cout << "Terminating main logic thread..." << std::endl;
@@ -55,7 +55,7 @@ int main() {
 
 	// Setup CEF state.
 	CefInfo cefInfo;
-	cefInfo.mainLogicFunction = mainLogic;
-	cefInfo.webserverFunction = webserver;
+	cefInfo.mainLogicFunction = mainLogicStart;
+	cefInfo.webserverFunction = webserverStart;
 	return client::RunMain::RunMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow, cefInfo);
 }
