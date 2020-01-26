@@ -501,9 +501,6 @@
     <ClInclude Include="..\src\tab-space\cefclient_win.h">
       <Filter>tab-space</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tab-space\cef-info.h">
-      <Filter>tab-space</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\rain-aeternum\algorithm-libraries.h">
       <Filter>rain-aeternum</Filter>
     </ClInclude>
@@ -578,6 +575,12 @@
     </ClInclude>
     <ClInclude Include="..\src\rain-aeternum\windows-lam-include.h">
       <Filter>rain-aeternum</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\tab-space-state.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\tab-info.h">
+      <Filter>tab-space</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

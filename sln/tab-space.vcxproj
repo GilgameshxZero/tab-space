@@ -747,8 +747,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\cefclient\renderer\performance_test_tests.cc" />
     <ClCompile Include="..\src\shared\renderer\client_app_renderer.cc" />
     <ClInclude Include="..\src\shared\renderer\client_app_renderer.h" />
-    <ClInclude Include="..\src\tab-space\cef-info.h" />
+    <ClInclude Include="..\src\tab-space\tab-space-state.h" />
     <ClInclude Include="..\src\tab-space\cefclient_win.h" />
+    <ClInclude Include="..\src\tab-space\tab-info.h" />
     <ClInclude Include="..\src\tab-space\webserver.h" />
     <None Include="..\src\cefclient\resources\binding.html" />
     <None Include="..\src\cefclient\resources\dialogs.html" />

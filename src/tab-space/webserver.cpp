@@ -17,6 +17,8 @@
 // Getting current executable path.
 #include <boost/dll.hpp>
 
+#include "../tab-space/tab-space-state.h"
+
 using namespace std;
 // Added for the json-example:
 using namespace boost::property_tree;
@@ -40,6 +42,18 @@ void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::R
 		stream << field.first << ": " << field.second << "<br>";
 
 	response->write(stream);
+}
+
+auto getCreateCurried(TabSpaceState &tabSpaceState) {
+	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+		response->write("Done.");
+		client::RootWindowConfig window_config;
+		window_config.always_on_top = false;
+		window_config.with_controls = false;
+		window_config.with_osr = false;
+		tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
+		std::cout << "Launched new tab at " << std::endl;
+	};
 }
 
 void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
@@ -109,9 +123,10 @@ void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::e
 	cout << "Http error: " << ec << endl;
 }
 
-void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server) {
+void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &tabSpaceState) {
 	server.config.port = 61001;
 	server.resource["^/info$"]["GET"] = getInfo;
+	server.resource["^/create$"]["GET"] = getCreateCurried(tabSpaceState);
 	server.default_resource["GET"] = getDefault;
 	server.on_error = httpServerError;
 }

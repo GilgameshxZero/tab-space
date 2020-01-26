@@ -19,7 +19,7 @@
 #include "../shared/common/client_switches.h"
 #include "../shared/renderer/client_app_renderer.h"
 
-#include "../tab-space/cef-info.h"
+#include "../tab-space/tab-space-state.h"
 
 // tab-space: Sandbox is manually turned off; i.e. CEF_USE_SANDBOX is not defined.
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
@@ -38,7 +38,7 @@ namespace client {
 	// tab-space: Name the namespace for prototyping.
 	namespace RunMain {
 
-		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
+		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, TabSpaceState &tabSpaceState) {
 			// Enable High-DPI support on Windows 7 or newer.
 			CefEnableHighDPISupport();
 
@@ -111,28 +111,28 @@ namespace client {
 			test_runner::RegisterSchemeHandlers();
 
 			// tab-space: Not launching root window, so don't need to build configuration here.
-			RootWindowConfig window_config;
-			window_config.always_on_top = command_line->HasSwitch(switches::kAlwaysOnTop);
-			window_config.with_controls =
-				!command_line->HasSwitch(switches::kHideControls);
-			window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
+			//// tab-space: TODO: Create first window so that CEF doesn't shut down spuriously.
+			//// tab-space: Logging.
+			//std::cout << "Creating first window..." << std::endl;
+			//RootWindowConfig window_config;
+			//window_config.always_on_top = command_line->HasSwitch(switches::kAlwaysOnTop);
+			//window_config.with_controls =
+			//	!command_line->HasSwitch(switches::kHideControls);
+			//window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
 
-			// Create the first window.
-			// tab-space: TODO: Create first window so that CEF doesn't shut down spuriously.
-			// tab-space: Logging.
-			std::cout << "Creating first window..." << std::endl;
-			// tab-space: This is only called once, even with multiple processes.
-			context->GetRootWindowManager()->CreateRootWindow(window_config);
+			//// Create the first window.
+			//// tab-space: This is only called once, even with multiple processes.
+			//context->GetRootWindowManager()->CreateRootWindow(window_config);
 
 			// tab-space: Context is now ready. Start the main logic thread.
 			// tab-space: TODO: Why must we do all thread launches here?
-			cefInfo.context = context;
-			cefInfo.mainLogicThread = new std::thread([&]() {
-				return cefInfo.mainLogicFunction(hInstance, hPrevInstance, lpCmdLine, nCmdShow, cefInfo);
+			tabSpaceState.context = context;
+			tabSpaceState.mainLogicThread = new std::thread([&]() {
+				return tabSpaceState.mainLogicFunction(hInstance, hPrevInstance, lpCmdLine, nCmdShow, tabSpaceState);
 				}
 			);
-			cefInfo.webserverThread = new std::thread([&]() {
-				return cefInfo.webserverFunction(cefInfo);
+			tabSpaceState.webserverThread = new std::thread([&]() {
+				return tabSpaceState.webserverFunction(tabSpaceState);
 				}
 			);
 
@@ -150,8 +150,8 @@ namespace client {
 			delete context;
 
 			// tab-space: Wait for the main logic thread to terminate.
-			cefInfo.mainLogicThread->join();
-			delete cefInfo.mainLogicThread;
+			tabSpaceState.mainLogicThread->join();
+			delete tabSpaceState.mainLogicThread;
 
 			return 0;
 		}

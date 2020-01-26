@@ -4,7 +4,9 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
-class CefInfo {
+#include "../tab-space/tab-info.h"
+
+class TabSpaceState {
 public:
 	// CEF context. Freed automatically at the end of CEF loop.
 	client::MainContextImpl *context;
@@ -13,11 +15,18 @@ public:
 	std::thread *mainLogicThread;
 
 	// Function which should be associated with mainLogicThread.
-	typedef int (*MainLogicFunction)(HINSTANCE, HINSTANCE, LPTSTR, int, CefInfo &);
+	typedef int (*MainLogicFunction)(HINSTANCE, HINSTANCE, LPTSTR, int, TabSpaceState &);
 	MainLogicFunction mainLogicFunction;
 
 	// Threads and functions for webserver thread.
 	std::thread *webserverThread;
-	typedef int (*WebserverFunction)(CefInfo &);
+	typedef int (*WebserverFunction)(TabSpaceState &);
 	WebserverFunction webserverFunction;
+
+	// TODO: Why can't we share RootWindowConfigs?
+
+	// Mapping from ID to TabInfo
+	std::map<std::string, TabInfo> tabInfos;
+
+	// Generate a unique tab ID.
 };
