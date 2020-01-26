@@ -590,5 +590,8 @@
     <Filter Include="simple-web-server">
       <UniqueIdentifier>{0665c98c-4e7c-4053-80a3-d28299461834}</UniqueIdentifier>
     </Filter>
+    <Filter Include="rain-aeternum">
+      <UniqueIdentifier>{ca515937-a6f1-4c94-a576-ecec198b7d95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

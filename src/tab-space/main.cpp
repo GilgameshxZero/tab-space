@@ -14,6 +14,34 @@
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
 
+int webserver(CefInfo &cefInfo) {
+	std::cout << "Starting webserver thread..." << std::endl;
+
+	HttpServer httpServer;
+	setupHttpServer(httpServer);
+	std::cout << "Webserver starting..." << std::endl;
+	httpServer.start();
+	std::cout << "Webserver terminated." << std::endl;
+
+	return 0;
+}
+
+int mainLogic(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
+	std::cout << "Starting main logic thread..." << std::endl;
+
+	////// Take commands in main thread.
+	//std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+	////client::RootWindowConfig window_config;
+	////window_config.always_on_top = false;
+	////window_config.with_controls = true;
+	////window_config.with_osr = false;
+	////std::cout << "Launching root window...";
+	////cefInfo.context->GetRootWindowManager()->CreateRootWindow(window_config);
+	//cefThread.join();
+
+	return 0;
+}
+
 int main() {
 	// Windows setup.
 	HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -21,35 +49,13 @@ int main() {
 	LPTSTR lpCmdLine = GetCommandLine();
 	int nCmdShow = SW_SHOWNORMAL;
 
-	//// Single-threaded webserver.
-	//HttpServer httpServer;
-	//setupHttpServer(httpServer);
+	std::cout << "Starting main process..." << std::endl;
 
-	//// Run webserver in separate thread.
-	//std::thread webserverThread([&]() {
-	//	std::cout << "Webserver starting..." << std::endl;
-	//	httpServer.start();
-	//	std::cout << "Webserver terminated." << std::endl;
+	// This process will be started multiple times. Ensure that in each, the CEF loop is run on the main thread. However, other threads should only be started from the main process.
 
-	//	return 0;
-	//	}
-	//);
-	//webserverThread.detach();
-
-	// Setup program state.
+	// Setup CEF state.
 	CefInfo cefInfo;
-
-	// Begin CEF loop in separate thread.
-	client::RunMain::RunMain(hInstance, nCmdShow, cefInfo);
-
-	//// Take commands in main thread.
-	//std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	//client::RootWindowConfig window_config;
-	//window_config.always_on_top = false;
-	//window_config.with_controls = true;
-	//window_config.with_osr = false;
-	//std::cout << "Launching root window...";
-	//cefInfo.context->GetRootWindowManager()->CreateRootWindow(window_config);
-	//webserverThread.join();
-	return 0;
+	cefInfo.mainLogicFunction = mainLogic;
+	cefInfo.webserverFunction = webserver;
+	return client::RunMain::RunMain(hInstance, hPrevInstance, lpCmdLine, nCmdShow, cefInfo);
 }

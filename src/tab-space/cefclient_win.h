@@ -6,6 +6,6 @@
 
 namespace client {
 	namespace RunMain {
-		int RunMain(HINSTANCE hInstance, int nCmdShow, CefInfo &cefInfo);
+		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo);
 	}
 }

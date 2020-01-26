@@ -38,13 +38,13 @@ namespace client {
 	// tab-space: Name the namespace for prototyping.
 	namespace RunMain {
 
-		int RunMain(HINSTANCE hInstance, int nCmdShow, CefInfo& cefInfo) {
+		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
 			// Enable High-DPI support on Windows 7 or newer.
 			CefEnableHighDPISupport();
 
 			CefMainArgs main_args(hInstance);
 
-			void* sandbox_info = NULL;
+			void *sandbox_info = NULL;
 
 #if defined(CEF_USE_SANDBOX)
 			// Manage the life span of the sandbox information object. This is necessary
@@ -68,14 +68,19 @@ namespace client {
 				app = new ClientAppOther();
 
 			// Execute the secondary process, if any.
+			// tab-space: Logging.
+			std::cout << "Executing any secondary processes..." << std::endl;
 			int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
-			if (exit_code >= 0)
+			if (exit_code >= 0) {
+				// tab-space: Logging.
+				std::cout << "Secondary process returned non-zero exit code." << std::endl;
 				return exit_code;
+			}
 
 			// Create the main context object.
 			// tab-space: Don't terminate CEF when all windows closed.
 			// tab-space: Use normal pointer to access context from other threads.
-			MainContextImpl* context = new MainContextImpl(command_line, false);
+			MainContextImpl *context = new MainContextImpl(command_line, false);
 
 			CefSettings settings;
 
@@ -109,18 +114,26 @@ namespace client {
 			RootWindowConfig window_config;
 			window_config.always_on_top = command_line->HasSwitch(switches::kAlwaysOnTop);
 			window_config.with_controls =
-			 	!command_line->HasSwitch(switches::kHideControls);
+				!command_line->HasSwitch(switches::kHideControls);
 			window_config.with_osr = settings.windowless_rendering_enabled ? true : false;
 
 			// Create the first window.
-			// tab-space: Disable default window and wait for web request.
+			// tab-space: Logging.
+			std::cout << "Creating first window..." << std::endl;
+			// tab-space: This is only called once, even with multiple processes.
 			context->GetRootWindowManager()->CreateRootWindow(window_config);
 
-			// tab-space: Context is now ready, so tell that to other threads.
+			// tab-space: Context is now ready. Start the main logic thread.
+			// tab-space: TODO: Why must we do all thread launches here?
 			cefInfo.context = context;
-
-			// tab-space: Logging.
-			std::cout << "CEF starting..." << std::endl;
+			cefInfo.mainLogicThread = new std::thread([&]() {
+				return cefInfo.mainLogicFunction(hInstance, hPrevInstance, lpCmdLine, nCmdShow, cefInfo);
+				}
+			);
+			cefInfo.webserverThread = new std::thread([&]() {
+				return cefInfo.webserverFunction(cefInfo);
+				}
+			);
 
 			// Run the message loop. This will block until Quit() is called by the
 			// RootWindowManager after all windows have been destroyed.
@@ -135,8 +148,9 @@ namespace client {
 			// tab-space: Since not using scoped_ptr, we must manually delete at the end of the scope.
 			delete context;
 
-			// tab-space: Logging.
-			std::cout << "CEF terminated." << std::endl;
+			// tab-space: Wait for the main logic thread to terminate.
+			cefInfo.mainLogicThread->join();
+			delete cefInfo.mainLogicThread;
 
 			return 0;
 		}
