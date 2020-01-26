@@ -29,16 +29,16 @@ int webserver(CefInfo &cefInfo) {
 int mainLogic(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, CefInfo &cefInfo) {
 	std::cout << "Starting main logic thread..." << std::endl;
 
-	////// Take commands in main thread.
-	//std::this_thread::sleep_for(std::chrono::milliseconds(4000));
-	////client::RootWindowConfig window_config;
-	////window_config.always_on_top = false;
-	////window_config.with_controls = true;
-	////window_config.with_osr = false;
-	////std::cout << "Launching root window...";
-	////cefInfo.context->GetRootWindowManager()->CreateRootWindow(window_config);
-	//cefThread.join();
+	//// Take commands in main thread.
+	std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+	client::RootWindowConfig window_config;
+	window_config.always_on_top = false;
+	window_config.with_controls = false;
+	window_config.with_osr = false;
+	std::cout << "Launching root window...";
+	cefInfo.context->GetRootWindowManager()->CreateRootWindow(window_config);
 
+	std::cout << "Terminating main logic thread..." << std::endl;
 	return 0;
 }
 
