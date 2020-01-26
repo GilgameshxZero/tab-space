@@ -6,4 +6,6 @@ public:
 	std::string id;
 
 	scoped_refptr<client::RootWindow> rootWindow;
+
+	HWND nativeHandle;
 };

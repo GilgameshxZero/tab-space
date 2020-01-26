@@ -71,3 +71,5 @@ Endpoint|Usage
 `/`|Homepage
 `/info`|Testing endpoint. Should return some basic information about the HTTP multiplexer.
 `/create`|Launches tab on the backend. Returns tab ID.
+`/tab/.+`|Proxy for `tab.html`, with some tab ID enforced.
+`/stream/.+`|MJPEG stream for some tab ID.

@@ -113,9 +113,14 @@ auto getCreateCurried(TabSpaceState &tabSpaceState) {
 		window_config.with_controls = true;
 		window_config.with_osr = false;
 		scoped_refptr<client::RootWindow> rootWindow = tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
+
+		// Setup TabInfo.
 		tabSpaceState.tabInfos[id] = TabInfo();
-		tabSpaceState.tabInfos[id].id = id;
-		tabSpaceState.tabInfos[id].rootWindow = rootWindow;
+		TabInfo &tabInfo = tabSpaceState.tabInfos[id];
+		tabInfo.id = id;
+		tabInfo.rootWindow = rootWindow;
+		tabInfo.nativeHandle = rootWindow->GetWindowHandle();
+
 		std::cout << "Launched new tab at " << id << std::endl;
 		response->write(id);
 	};
@@ -123,6 +128,10 @@ auto getCreateCurried(TabSpaceState &tabSpaceState) {
 
 void getTab(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
 	serveStatic(response, "/tab.html");
+}
+
+void getStream(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+	serveStatic(response, "/video.mp4");
 }
 
 void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
@@ -140,7 +149,8 @@ void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &
 	server.config.port = 61001;
 	server.resource["^/info$"]["GET"] = getInfo;
 	server.resource["^/create$"]["GET"] = getCreateCurried(tabSpaceState);
-	server.resource["^/tab$"]["GET"] = getTab;
+	server.resource["^/tab/.+$"]["GET"] = getTab;
+	server.resource["^/stream/.+$"]["GET"] = getStream;
 	server.default_resource["GET"] = getDefault;
 	server.on_error = httpServerError;
 }
