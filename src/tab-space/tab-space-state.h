@@ -25,8 +25,9 @@ public:
 
 	// TODO: Why can't we share RootWindowConfigs?
 
-	// Mapping from ID to TabInfo
+	// Mapping from ID to TabInfo. IDs are unique.
 	std::map<std::string, TabInfo> tabInfos;
 
-	// Generate a unique tab ID.
+	// Function to generate a unique tab ID, at least with regards to tabInfos
+	std::string generateUniqueTabId();
 };

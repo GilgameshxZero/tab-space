@@ -1,0 +1,96 @@
+<!-- Requests video stream based on query parameter. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
+
+  <meta charset="UTF-8">
+  <link rel="shortcut icon" href="img/favicon.ico" />
+  <base target="_blank">
+  <title>tab.space</title>
+
+  <link rel="stylesheet" type="text/css" href="css/pane.css">
+  <script type="text/javascript" src="js/index.js"></script>
+</head>
+
+<body class="loading">
+  <button class="top-button no-display"><img src="img/double-up-arrow.png"></button>
+  <div class="header">
+    <div class="stack">
+      <div class="splash">
+        <div class="stack">
+          <div class="logo">
+            <span class="red">urop</span>.<span class="blue">guide</span>
+          </div>
+          <div class="acknowledgements">
+            Data pulled from <a href="https://urop.mit.edu/jobs-board" target="_blank">official
+              UROP postings</a>.<br>
+            Questions? Email <a href="mailto:urop-guide@mit.edu" target="_blank">urop-guide@mit.edu</a>.
+          </div>
+        </div>
+      </div>
+      <div class="filter">
+        <div class="stack">
+          <input class="search no-focus" placeholder="Search...">
+          <div class="star-terms">
+            <div class="star no-focus no-select">
+              <img class="unfilled" src="/img/star-unfilled.png">
+              <img class="filled" src="/img/star-filled.png">
+            </div>
+            <div class="term fall no-focus no-select">Fall</div>
+            <div class="term iap no-focus no-select">IAP</div>
+            <div class="term spring no-focus no-select">Spring</div>
+            <div class="term summer no-focus no-select">Summer</div>
+          </div>
+        </div>
+      </div>
+      <div class="subscribe">
+        <div class="stack">
+          <input class="no-focus" placeholder="Email">
+          <div class="button no-select no-focus disabled">
+            Subscribe<span class="d">d</span> (<span class="count"></span>)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="notifications no-display">
+    The subscription is WIP.
+  </div>
+  <div class="viewer">
+    <div class="template pane">
+      <div class="left">
+        <span class="title-wrap">
+          <a class="detail-link natural-word-break">
+            <span class="title"></span> →
+          </a>
+        </span>
+        <div class="description natural-word-break"></div>
+        <div class="divider"></div>
+        <div class="prereqs natural-word-break"></div>
+      </div>
+      <div class="right">
+        <div class="top">
+          <div class="terms"></div>
+          <div class="due natural-word-break"></div>
+          <div class="posted natural-word-break"></div>
+        </div>
+        <div class="bottom">
+          <div class="contact natural-word-break"></div>
+          <div class="faculty natural-word-break"></div>
+          <div class="department natural-word-break"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="end">
+    <span class="hint-term no-display"><b>Try clearing the term filters!</b><br></span>
+    <span class="hint-star no-display"><b>Click on a post to star it!</b><br></span>
+    No more UROPs :')<br>
+    Built with ❤️ by <a href="https://stella-yang.com/">Stella Yang</a>, <a href="https://gilgamesh.cc/">Gilbert
+      Yan</a>, <a href="https://www.alisaono.coffee/">Alisa Ono</a>, and Angela Cai.
+  </div>
+</body>
+
+</html>

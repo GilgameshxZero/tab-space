@@ -1,5 +1,3 @@
-#include "webserver.h"
-
 // Added for the json-example
 #define BOOST_SPIRIT_THREADSAFE
 #include <boost/property_tree/json_parser.hpp>
@@ -17,6 +15,9 @@
 // Getting current executable path.
 #include <boost/dll.hpp>
 
+#include <malloc.h>
+
+#include "webserver.h"
 #include "../tab-space/tab-space-state.h"
 
 using namespace std;
@@ -26,38 +27,7 @@ using namespace boost::property_tree;
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
 
-void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-	stringstream stream;
-	stream << "<h1>Request from " << request->remote_endpoint_address() << ":" << request->remote_endpoint_port() << "</h1>";
-
-	stream << request->method << " " << request->path << " HTTP/" << request->http_version;
-
-	stream << "<h2>Query Fields</h2>";
-	auto query_fields = request->parse_query_string();
-	for (auto &field : query_fields)
-		stream << field.first << ": " << field.second << "<br>";
-
-	stream << "<h2>Header Fields</h2>";
-	for (auto &field : request->header)
-		stream << field.first << ": " << field.second << "<br>";
-
-	response->write(stream);
-}
-
-auto getCreateCurried(TabSpaceState &tabSpaceState) {
-	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		response->write("Done.");
-		client::RootWindowConfig window_config;
-		window_config.always_on_top = false;
-		window_config.with_controls = false;
-		window_config.with_osr = false;
-		tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
-		std::cout << "Launched new tab at " << std::endl;
-	};
-}
-
-void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-	// Default GET-example. If no other matches, this anonymous function will be called.
+void serveStatic(shared_ptr<HttpServer::Response> response, std::string requestPath) {
 	// Will respond with content in the static/-directory, and its subdirectories.
 	// Default file: index.html
 	// Can for instance be used to retrieve an HTML 5 client that uses REST-resources on this server
@@ -65,7 +35,7 @@ void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer
 		// Previously was using canonical, but that didn't seem to work.
 		// Using executable path to avoid Visual Studio debugging issues.
 		auto web_root_path = boost::filesystem::absolute(boost::dll::program_location().parent_path() / "../../static");
-		auto path = boost::filesystem::absolute(web_root_path / request->path);
+		auto path = boost::filesystem::absolute(web_root_path / requestPath);
 
 		// Check if path is within web_root_path
 		if (distance(web_root_path.begin(), web_root_path.end()) > distance(path.begin(), path.end()) ||
@@ -113,8 +83,47 @@ void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer
 			throw invalid_argument("could not read file");
 	}
 	catch (const exception & e) {
-		response->write(SimpleWeb::StatusCode::client_error_bad_request, "Could not open path " + request->path + ": " + e.what());
+		response->write(SimpleWeb::StatusCode::client_error_bad_request, "Could not open path " + requestPath + ": " + e.what());
 	}
+}
+
+void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+	stringstream stream;
+	stream << "<h1>Request from " << request->remote_endpoint_address() << ":" << request->remote_endpoint_port() << "</h1>";
+
+	stream << request->method << " " << request->path << " HTTP/" << request->http_version;
+
+	stream << "<h2>Query Fields</h2>";
+	auto query_fields = request->parse_query_string();
+	for (auto &field : query_fields)
+		stream << field.first << ": " << field.second << "<br>";
+
+	stream << "<h2>Header Fields</h2>";
+	for (auto &field : request->header)
+		stream << field.first << ": " << field.second << "<br>";
+
+	response->write(stream);
+}
+
+auto getCreateCurried(TabSpaceState &tabSpaceState) {
+	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+		response->write("Done.");
+		client::RootWindowConfig window_config;
+		window_config.always_on_top = false;
+		window_config.with_controls = true;
+		window_config.with_osr = false;
+		tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
+		std::cout << "Launched new tab at " << std::endl;
+	};
+}
+
+void getTab(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+	serveStatic(response, "/tab.html");
+}
+
+void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+	// Default GET-example. If no other matches, this anonymous function will be called.
+	serveStatic(response, request->path);
 }
 
 void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::error_code &ec) {
@@ -127,6 +136,7 @@ void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &
 	server.config.port = 61001;
 	server.resource["^/info$"]["GET"] = getInfo;
 	server.resource["^/create$"]["GET"] = getCreateCurried(tabSpaceState);
+	server.resource["^/tab$"]["GET"] = getTab;
 	server.default_resource["GET"] = getDefault;
 	server.on_error = httpServerError;
 }

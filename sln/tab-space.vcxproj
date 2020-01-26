@@ -552,6 +552,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\tab-space\main.cpp" />
+    <ClCompile Include="..\src\tab-space\tab-space-state.cpp" />
     <ClCompile Include="..\src\tab-space\webserver.cpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\client_http.hpp" />

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Windows.h>
+
 #include "client_http.hpp"
 #include "server_http.hpp"
 

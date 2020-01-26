@@ -1,13 +1,13 @@
-#include "../tab-space/cefclient_win.h"
-
 #include <chrono>
 #include <thread>
-
-#include "../cefclient/browser/root_window_manager.h"
+#include <malloc.h>
 
 #include "client_http.hpp"
 #include "server_http.hpp"
 
+#include "../cefclient/browser/root_window_manager.h"
+
+#include "../tab-space/cefclient_win.h"
 #include "../tab-space/tab-space-state.h"
 #include "../tab-space/webserver.h"
 
@@ -37,7 +37,7 @@ int mainLogicStart(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLin
 	//std::cout << "Launching root window..." << std::endl;
 	//tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
 
-	// Take commands in main thread.
+	// TODO: Take commands in main thread.
 	while (true) {
 		std::cin.get();
 	}

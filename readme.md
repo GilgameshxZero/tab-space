@@ -44,6 +44,12 @@ to generate `./cef_binary_*/cef.sln`. Opening the solution in Visual Studio, mak
 
 in the Boost install directory. If Boost is already installed on the system, one may symbolically link it into `./boost_*`. The appropriate library and include paths have already been included in the project configuration.
 
+#### `_alloca`: Identifier not found
+
+You got this error? Sucks to be you, I guess.
+
+Try `#include <malloc.h>` in the file that it complains about.
+
 ### HTTP Multiplexer
 
 `tab-space` is deployed at <https://tab.gilgamesh.cc> via [http-mux](https://github.com/GilgameshxZero/http-mux) running on an AWS EC2 instance. The relevant tunneling command from the `tab-space` server is

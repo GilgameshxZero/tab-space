@@ -271,6 +271,9 @@
     <ClCompile Include="..\src\rain-aeternum\utility-time.cpp">
       <Filter>rain-aeternum</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tab-space\tab-space-state.cpp">
+      <Filter>tab-space</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\cefclient\browser\binding_test.h">
