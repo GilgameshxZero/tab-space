@@ -343,6 +343,7 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings,
 
   const DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
   DWORD dwExStyle = always_on_top_ ? WS_EX_TOPMOST : 0;
+  // tab-space: TODO: Never activate new window.
   if (no_activate) {
     // Don't activate the browser window on creation.
     dwExStyle |= WS_EX_NOACTIVATE;

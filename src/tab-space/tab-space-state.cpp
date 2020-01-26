@@ -1,7 +1,7 @@
 #include "tab-space-state.h"
 
 std::string TabSpaceState::generateUniqueTabId() {
-  static const int ID_LEN = 4;
+  static const int ID_LEN = 5;
   static const std::string alphabet =
     "0123456789"
     "abcdefghijklmnopqrstuvwxyz";
@@ -10,7 +10,7 @@ std::string TabSpaceState::generateUniqueTabId() {
   while (true) {
     std::string id;
     for (int a = 0; a < ID_LEN; a++) {
-      id += alphabet[rand() % alphabet.length()];
+      id += alphabet[this->rng() % alphabet.length()];
     }
 
     if (this->tabInfos.find(id) == this->tabInfos.end()) {

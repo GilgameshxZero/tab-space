@@ -1,28 +1,15 @@
-// Added for the json-example
-#define BOOST_SPIRIT_THREADSAFE
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-
-// Added for the default_resource example
-#include <algorithm>
-#include <boost/filesystem.hpp>
+#include <malloc.h>
 #include <fstream>
-#include <vector>
-#ifdef HAVE_OPENSSL
-#include "crypto.hpp"
-#endif
 
-// Getting current executable path.
+#include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
-#include <malloc.h>
+#include "../tab-space/rain-window.h"
 
-#include "webserver.h"
+#include "../tab-space/webserver.h"
 #include "../tab-space/tab-space-state.h"
 
 using namespace std;
-// Added for the json-example:
-using namespace boost::property_tree;
 
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
@@ -45,6 +32,10 @@ void serveStatic(shared_ptr<HttpServer::Response> response, std::string requestP
 			path /= "index.html";
 
 		SimpleWeb::CaseInsensitiveMultimap header;
+
+		header.emplace("Cache-Control", "private, no-cache, no-store, must-revalidate");
+		header.emplace("Expires", "-1");
+		header.emplace("Pragma", "no-cache");
 
 		auto ifs = make_shared<ifstream>();
 		ifs->open(path.string(), ifstream::in | ios::binary | ios::ate);
@@ -70,7 +61,7 @@ void serveStatic(shared_ptr<HttpServer::Response> response, std::string requestP
 								if (!ec)
 									read_and_send(response, ifs);
 								else
-									cerr << "Connection interrupted" << endl;
+									cerr << "Connection interrupted." << endl;
 								}
 							);
 						}
@@ -107,21 +98,33 @@ void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::R
 
 auto getCreateCurried(TabSpaceState &tabSpaceState) {
 	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		std::string id = tabSpaceState.generateUniqueTabId();
-		client::RootWindowConfig window_config;
-		window_config.always_on_top = false;
-		window_config.with_controls = true;
-		window_config.with_osr = false;
-		scoped_refptr<client::RootWindow> rootWindow = tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
+		static const int TAB_WIDTH = 1920, TAB_HEIGHT = 1080;
 
-		// Setup TabInfo.
+		std::string id = tabSpaceState.generateUniqueTabId();
 		tabSpaceState.tabInfos[id] = TabInfo();
 		TabInfo &tabInfo = tabSpaceState.tabInfos[id];
+
+		client::RootWindowConfig windowConfig;
+		windowConfig.always_on_top = false;
+		windowConfig.with_controls = false;
+		windowConfig.with_osr = false;
+		// windowConfig.initially_hidden = true;
+		windowConfig.bounds = CefRect(100, 100, TAB_WIDTH, TAB_HEIGHT);
+		scoped_refptr<client::RootWindow> rootWindow = tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
+
+		// Setup tabInfo.
 		tabInfo.id = id;
 		tabInfo.rootWindow = rootWindow;
-		tabInfo.nativeHandle = rootWindow->GetWindowHandle();
+		tabInfo.captureThread = std::thread([](TabInfo *pTabInfo) {
+			pTabInfo->captureFunction();
+			}, &tabInfo
+		);
+		tabInfo.jpegClsid = &tabSpaceState.jpegClsid;
 
-		std::cout << "Launched new tab at " << id << std::endl;
+		// Hand off to main thread to complete tab initialization.
+		// PostMessage(tabSpaceState.mainRWnd.hwnd, WM_RAINAVAILABLE, reinterpret_cast<WPARAM>(&tabInfo), 0);
+
+		std::cout << "Launched new tab with ID " << id << "." << std::endl;
 		response->write(id);
 	};
 }
@@ -131,6 +134,8 @@ void getTab(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Re
 }
 
 void getStream(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+	// TODO
+	std::cout << "Video stream requested for tab ID " << request->path_match[1].str() << std::endl;
 	serveStatic(response, "/video.mp4");
 }
 
@@ -142,7 +147,7 @@ void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer
 void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::error_code &ec) {
 	// Handle errors here
 	// Note that connection timeouts will also call this handle with ec set to SimpleWeb::errc::operation_canceled
-	cout << "Http error: " << ec << endl;
+	// cout << "Http error: " << ec << endl;
 }
 
 void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &tabSpaceState) {
@@ -150,7 +155,7 @@ void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &
 	server.resource["^/info$"]["GET"] = getInfo;
 	server.resource["^/create$"]["GET"] = getCreateCurried(tabSpaceState);
 	server.resource["^/tab/.+$"]["GET"] = getTab;
-	server.resource["^/stream/.+$"]["GET"] = getStream;
+	server.resource["^/stream/(.+)$"]["GET"] = getStream;
 	server.default_resource["GET"] = getDefault;
 	server.on_error = httpServerError;
 }

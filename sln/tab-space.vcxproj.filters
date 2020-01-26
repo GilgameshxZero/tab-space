@@ -274,6 +274,12 @@
     <ClCompile Include="..\src\tab-space\tab-space-state.cpp">
       <Filter>tab-space</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\tab-space\tab-info.cpp">
+      <Filter>tab-space</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tab-space\rain-window.cpp">
+      <Filter>tab-space</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\cefclient\browser\binding_test.h">
@@ -583,6 +589,15 @@
       <Filter>tab-space</Filter>
     </ClInclude>
     <ClInclude Include="..\src\tab-space\tab-info.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\gdi-plus-include.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\windows-lam-include.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\rain-window.h">
       <Filter>tab-space</Filter>
     </ClInclude>
   </ItemGroup>

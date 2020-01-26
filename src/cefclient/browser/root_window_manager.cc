@@ -5,6 +5,7 @@
 #include "../../cefclient/browser/root_window_manager.h"
 
 #include <sstream>
+#include <iostream>
 
 #include "include/base/cef_bind.h"
 #include "include/base/cef_logging.h"
@@ -133,6 +134,9 @@ scoped_refptr<RootWindow> RootWindowManager::CreateRootWindow(
 
   // Store a reference to the root window on the main thread.
   OnRootWindowCreated(root_window);
+
+  // tab-space: TODO: Why do I need this so that the second call isn't NULL?
+  std::cout << root_window->GetWindowHandle() << std::endl;
 
   return root_window;
 }

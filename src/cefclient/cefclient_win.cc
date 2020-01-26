@@ -19,6 +19,8 @@
 #include "../shared/common/client_switches.h"
 #include "../shared/renderer/client_app_renderer.h"
 
+#include "../tab-space/rain-window.h"
+
 #include "../tab-space/tab-space-state.h"
 
 // tab-space: Sandbox is manually turned off; i.e. CEF_USE_SANDBOX is not defined.
@@ -69,11 +71,11 @@ namespace client {
 
 			// Execute the secondary process, if any.
 			// tab-space: Logging.
-			std::cout << "Executing any secondary processes..." << std::endl;
+			// std::cout << "Executing any secondary processes..." << std::endl;
 			int exit_code = CefExecuteProcess(main_args, app, sandbox_info);
 			if (exit_code >= 0) {
 				// tab-space: Logging.
-				std::cout << "Secondary process returned non-zero exit code." << std::endl;
+				// std::cout << "Secondary process returned non-zero exit code." << std::endl;
 				return exit_code;
 			}
 
@@ -127,18 +129,67 @@ namespace client {
 			// tab-space: Context is now ready. Start the main logic thread.
 			// tab-space: TODO: Why must we do all thread launches here?
 			tabSpaceState.context = context;
-			tabSpaceState.mainLogicThread = new std::thread([&]() {
+			tabSpaceState.mainLogicThread = std::thread([&]() {
 				return tabSpaceState.mainLogicFunction(hInstance, hPrevInstance, lpCmdLine, nCmdShow, tabSpaceState);
 				}
 			);
-			tabSpaceState.webserverThread = new std::thread([&]() {
+			tabSpaceState.webserverThread = std::thread([&]() {
 				return tabSpaceState.webserverFunction(tabSpaceState);
 				}
 			);
 
 			// Run the message loop. This will block until Quit() is called by the
 			// RootWindowManager after all windows have been destroyed.
-			int result = message_loop->Run();
+			// tab-space: Logging.
+			//int result = message_loop->Run();
+
+			// Create HWND to receive messages and process them in the main thread.
+			std::unordered_map<UINT, Rain::RainWindow::MSGFC> msgm;
+			msgm[WM_RAINAVAILABLE] = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+				std::cout << "Received WM_RAINAVAILABLE on thread " << std::this_thread::get_id() << "..." << std::endl;
+
+				TabInfo &tabInfo = *reinterpret_cast<TabInfo *>(wParam);
+
+				std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				tabInfo.hWnd = tabInfo.rootWindow->GetWindowHandle();
+				std::cout << "New tab has HWND " << tabInfo.hWnd << ". " << tabInfo.rootWindow->GetBrowser() << std::endl;
+				std::cout << "New tab has HWND " << tabInfo.hWnd << ". " << tabInfo.rootWindow->GetBrowser() << std::endl;
+				RECT wndBounds;
+				GetClientRect(tabInfo.hWnd, &wndBounds);
+				tabInfo.left = wndBounds.left;
+				tabInfo.top = wndBounds.top;
+				tabInfo.width = wndBounds.right - wndBounds.left;
+				tabInfo.height = wndBounds.bottom - wndBounds.top;
+
+				// Get DC for entire desktop; but only capture the region containing the window.
+				tabInfo.hdc = GetDC(tabInfo.hWnd);
+				tabInfo.hDest = CreateCompatibleDC(tabInfo.hdc);
+				tabInfo.hbmp = CreateCompatibleBitmap(tabInfo.hdc, tabInfo.width, tabInfo.height);
+				SelectObject(tabInfo.hDest, tabInfo.hbmp);
+				tabInfo.captureThread = std::thread([](TabInfo *pTabInfo) {
+					pTabInfo->captureFunction();
+					}, &tabInfo
+				);
+				tabInfo.captureThread.detach();
+
+				return LRESULT(0);
+			};
+			tabSpaceState.mainRWnd.create(&msgm);
+
+			// tab-space: Message loop.
+			MSG msg;
+			BOOL bRet;
+
+			std::cout << "Running CEF message loop on thread " << std::this_thread::get_id() << "..." << std::endl;
+			while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0) {
+				if (bRet == -1)
+					return -1; //serious error
+				else {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+					CefDoMessageLoopWork();
+				}
+			}
 
 			// Shut down CEF.
 			context->Shutdown();
@@ -150,8 +201,8 @@ namespace client {
 			delete context;
 
 			// tab-space: Wait for the main logic thread to terminate.
-			tabSpaceState.mainLogicThread->join();
-			delete tabSpaceState.mainLogicThread;
+			tabSpaceState.webserverThread.join();
+			tabSpaceState.mainLogicThread.join();
 
 			return 0;
 		}
