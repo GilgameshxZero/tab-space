@@ -52,6 +52,10 @@ in the Boost install directory. If Boost is already installed on the system, one
 ssh -p 2222 -R tab.gilgamesh.cc:80:127.0.0.1:61001 gilgamesh.cc
 ```
 
+### Emilia/rain-aeternum
+
+`tab-space` may transition to using the `rain-aeternum` library for its webserver, primarily used in `Emilia`. The code for `rain-aeternum` is included in source control already.
+
 ## Endpoints
 
 `tab-space` reveals several endpoints for the web client.
