@@ -107,13 +107,17 @@ void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::R
 
 auto getCreateCurried(TabSpaceState &tabSpaceState) {
 	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		response->write("Done.");
+		std::string id = tabSpaceState.generateUniqueTabId();
 		client::RootWindowConfig window_config;
 		window_config.always_on_top = false;
 		window_config.with_controls = true;
 		window_config.with_osr = false;
-		tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
-		std::cout << "Launched new tab at " << std::endl;
+		scoped_refptr<client::RootWindow> rootWindow = tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(window_config);
+		tabSpaceState.tabInfos[id] = TabInfo();
+		tabSpaceState.tabInfos[id].id = id;
+		tabSpaceState.tabInfos[id].rootWindow = rootWindow;
+		std::cout << "Launched new tab at " << id << std::endl;
+		response->write(id);
 	};
 }
 

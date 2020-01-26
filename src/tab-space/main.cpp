@@ -15,8 +15,6 @@ using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
 
 int webserverStart(TabSpaceState &tabSpaceState) {
-	std::cout << "Starting webserver thread..." << std::endl;
-
 	HttpServer httpServer;
 	setupHttpServer(httpServer, tabSpaceState);
 	std::cout << "Webserver starting..." << std::endl;
