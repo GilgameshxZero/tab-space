@@ -29,7 +29,7 @@ namespace TabSpace {
 		std::mt19937 rng;
 
 		// Mapping from ID to TabManager. IDs are unique.
-		std::map<std::string, TabManager> tabManagers;
+		std::map<std::string, TabManager *> tabManagers;
 
 		// Function to generate a unique tab ID, at least with regards to tabManagers
 		std::string generateUniqueTabId();

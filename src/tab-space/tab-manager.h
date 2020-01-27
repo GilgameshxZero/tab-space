@@ -2,7 +2,7 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
-#include "../rain-library-4/gdi-plus-include.h"
+#include "../rain-library-4/rain-libraries.h"
 
 #include <string>
 #include <thread>
@@ -16,6 +16,9 @@ namespace TabSpace {
 		// CLSID to the JPEG encoder, retrieved globally previously.
 		static CLSID jpegClsid;
 
+		// Tab destruction handler.
+		static std::function<void(TabManager *)> onDestructHandler;
+
 		// Tab ID.
 		std::string id;
 
@@ -26,7 +29,7 @@ namespace TabSpace {
 		scoped_refptr<client::RootWindow> rootWindow;
 		scoped_refptr<CefBrowser> browser;
 
-		// Capturing variables
+		// Capturing variables.
 		HWND hWnd;
 		HDC hDc, hDest;
 		HBITMAP hBmp;
@@ -38,6 +41,8 @@ namespace TabSpace {
 		std::vector<char> jpegData;
 
 		// All threads which are reading from the JPEG capture.
+		Rain::ConditionVariable nonZeroListenerCV;
+		std::mutex listenerMutex;
 		std::set<std::thread::id> listeningThreads;
 	};
 }

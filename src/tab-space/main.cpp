@@ -24,6 +24,12 @@ namespace TabSpace {
 
 		Rain::getEncoderClsid(L"image/jpeg", &TabManager::jpegClsid);
 
+		// Setup tab destruct handler.
+		TabManager::onDestructHandler = [&state](TabManager *tabManager) {
+			state.tabManagers.erase(tabManager->id);
+			delete tabManager;
+		};
+
 		// Random seed for tab IDs.
 		// state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 

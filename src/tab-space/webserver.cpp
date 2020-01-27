@@ -83,8 +83,8 @@ namespace TabSpace {
 	auto getNewCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = state.generateUniqueTabId();
-			state.tabManagers[id] = TabManager();
-			TabManager &tabManager = state.tabManagers[id];
+			state.tabManagers[id] = new TabManager();
+			TabManager &tabManager = *state.tabManagers[id];
 
 			client::RootWindowConfig windowConfig;
 			windowConfig.always_on_top = false;
@@ -119,8 +119,13 @@ namespace TabSpace {
 			// Start separate thread to push data through.
 			std::thread([response](TabManager *tabManager) {
 				std::thread::id threadId = std::this_thread::get_id();
+				tabManager->listenerMutex.lock();
 				tabManager->listeningThreads.insert(threadId);
+				if (tabManager->listeningThreads.size() == 1) {
+					tabManager->nonZeroListenerCV.notify_one();
+				}
 				Rain::tsCout("Stream requested for tab ", tabManager->id, " on thread ", threadId, " [", tabManager->listeningThreads.size(), " total].",  Rain::CRLF);
+				tabManager->listenerMutex.unlock();
 				std::cout.flush();
 
 				Rain::ConditionVariable cv;
@@ -137,8 +142,10 @@ namespace TabSpace {
 					response->send([&](const SimpleWeb::error_code &ec) {
 						if (ec) {
 							active = false;
+							tabManager->listenerMutex.lock();
 							tabManager->listeningThreads.erase(threadId);
-							Rain::tsCout("Stream for tab ", tabManager->id, " on thread ", threadId, " closed by with value ", ec.value(), " [", tabManager->listeningThreads.size(), " total].", Rain::CRLF);
+							Rain::tsCout("Stream for tab ", tabManager->id, " on thread ", threadId, " closed with value ", ec.value(), " [", tabManager->listeningThreads.size(), " total].", Rain::CRLF);
+							tabManager->listenerMutex.unlock();
 							std::cout.flush();
 						}
 						cv.notify_one();
@@ -147,7 +154,7 @@ namespace TabSpace {
 					std::this_thread::sleep_for(std::chrono::milliseconds(33));
 					cv.wait(lck);
 				}
-			}, &state.tabManagers[id]).detach();
+			}, state.tabManagers[id]).detach();
 		};
 	}
 
