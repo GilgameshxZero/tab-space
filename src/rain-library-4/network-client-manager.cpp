@@ -207,7 +207,7 @@ namespace Rain {
 		while (csm.socketStatus == csm.STATUS_CONNECTING) {
 			Rain::sleep(csm.msReconnectWait);
 			if (csm.msReconnectWait < csm.msReconnectWaitMax)
-				csm.msReconnectWait = min(csm.msReconnectWait * 2, csm.msReconnectWaitMax);
+				csm.msReconnectWait = std::min(csm.msReconnectWait * 2, csm.msReconnectWaitMax);
 
 			//try to reconnect; assume ipAddress and port ranges are valid
 			//if address has not yet been retreived, try to get it here
@@ -269,7 +269,7 @@ namespace Rain {
 				//deal with differently depending on whether we connected on that block or not
 				if (csm.socketStatus != csm.STATUS_CONNECTED &&
 					csm.msSendMessageWait < csm.msSendWaitMax)
-					csm.msSendMessageWait = min(csm.msSendMessageWait * 2, csm.msSendWaitMax);
+					csm.msSendMessageWait = std::min(csm.msSendMessageWait * 2, csm.msSendWaitMax);
 				else if (csm.socketStatus == csm.STATUS_CONNECTED) {
 					Rain::sendRawMessage(csm.socket, &csm.messageQueue.front());
 					csm.messageQueue.pop();

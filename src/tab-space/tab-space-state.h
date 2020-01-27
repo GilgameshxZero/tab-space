@@ -5,15 +5,10 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
-#include "../tab-space/rain-window.h"
-
 #include "../tab-space/tab-info.h"
 
 class TabSpaceState {
 public:
-	// Implements the CEF and main message loops.
-	Rain::RainWindow mainRWnd;
-
 	// CLSID for jpeg encoder.
 	CLSID jpegClsid;
 

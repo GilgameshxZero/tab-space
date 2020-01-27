@@ -39,9 +39,9 @@ namespace Rain {
 	}
 
 	std::string getWorkingDirectory() {
-		DWORD bufferLen = GetCurrentDirectory(0, NULL);
-		TCHAR *buffer = new TCHAR[bufferLen];
-		GetCurrentDirectory(bufferLen, buffer);
+		DWORD bufferLen = GetCurrentDirectoryA(0, NULL);
+		CHAR *buffer = new CHAR[bufferLen];
+		GetCurrentDirectoryA(bufferLen, buffer);
 		std::string ret(buffer);
 		delete[] buffer;
 		return ret + "\\";
@@ -310,11 +310,11 @@ namespace Rain {
 	}
 
 	std::string getTmpFileName() {
-		TCHAR path[MAX_PATH + 1];
-		GetTempPath(MAX_PATH + 1, path);
+		CHAR path[MAX_PATH + 1];
+		GetTempPathA(MAX_PATH + 1, path);
 
-		TCHAR file[MAX_PATH + 1];
-		GetTempFileName(path, "", 0, file);
+		CHAR file[MAX_PATH + 1];
+		GetTempFileNameA(path, "", 0, file);
 		return file;
 	}
 }

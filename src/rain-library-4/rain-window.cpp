@@ -25,7 +25,7 @@ namespace Rain {
 	}
 	int RainWindow::create(
 		std::unordered_map<UINT, MSGFC> *msgm,
-		MSGFC *intfc,
+		MSGFC		*intfc,
 		UINT		style,
 		int			cbClsExtra,
 		int			cbWndExtra,
@@ -52,9 +52,7 @@ namespace Rain {
 			static LPCTSTR prefix = _T("Rain::Mono5::RainWindow ");
 			static const size_t prelen = _tcslen(prefix);
 			LPTSTR format = new TCHAR[prelen + 3]; //2 for the "%d", and 1 for the "\0"
-			char class_id_buffer[40];
-			itoa(class_id, class_id_buffer, 10);
-			int idlen = static_cast<int>(std::string(class_id_buffer).length()); //length of class_id
+			int idlen = static_cast<int>(Rain::tToStr(class_id).length()); //length of class_id
 			classname = new TCHAR[idlen + prelen + 1]; //1 for the "\0", memory freed later
 			_tcscpy_s(format, prelen + 3, prefix);
 			_tcscat_s(format, prelen + 3, _T("%d"));
@@ -62,8 +60,7 @@ namespace Rain {
 			lpszClassName = classname;
 			class_id++;
 			delete[] format;
-		}
-		else {
+		} else {
 			size_t prelen = _tcslen(lpszClassName);
 			classname = new TCHAR[prelen + 1];
 			_tcscpy_s(classname, prelen + 1, lpszClassName);

@@ -13,7 +13,7 @@ namespace Rain {
 	std::string getClientNumIP(SOCKET &clientSock) {
 		static struct sockaddr clname;
 		static int clnamesize;
-		static TCHAR clhname[32];
+		static CHAR clhname[32];
 
 		clnamesize = sizeof(clname);
 		getpeername(clientSock, &clname, &clnamesize);
@@ -45,7 +45,7 @@ namespace Rain {
 
 	RainWindow *createSendHandler(std::unordered_map<UINT, RainWindow::MSGFC> *msgm) {
 		RainWindow *rw = new RainWindow();
-		rw->create(msgm, NULL, NULL, 0, 0, GetModuleHandle(NULL), NULL, NULL, NULL, "", NULL, NULL, "", WS_POPUP, 0, 0, 0, 0, NULL, NULL, RainWindow::NULLCLASSNAME);
+		rw->create(msgm, NULL, NULL, 0, 0, GetModuleHandle(NULL), NULL, NULL, NULL, _T(""), NULL, NULL, _T(""), WS_POPUP, 0, 0, 0, 0, NULL, NULL, RainWindow::NULLCLASSNAME);
 
 		return rw;
 	}

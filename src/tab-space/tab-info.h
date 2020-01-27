@@ -6,7 +6,7 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
-#include "../tab-space/gdi-plus-include.h"
+#include "../rain-library-4/gdi-plus-include.h"
 
 // Everything we need to know about a tab.
 class TabInfo {

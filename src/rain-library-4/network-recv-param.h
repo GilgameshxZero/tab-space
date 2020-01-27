@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <Windows.h>
+#include "network-wsa-include.h"
 
 namespace Rain {
 	class RecvHandlerParam {

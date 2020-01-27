@@ -475,84 +475,26 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   <ItemGroup>
     <ClCompile Include="..\src\cefclient\browser\binding_test.cc" />
     <ClCompile Include="..\src\cefclient\cefclient_win.cc" />
-    <ClCompile Include="..\src\rain-aeternum\algorithm-libraries.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\condition-variable.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\config.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-base.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-client-manager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-headed-managers.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-recv-param.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-recv-thread.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-server-manager.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-smtp.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\network-utility.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\rain-window.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\timer.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-error.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-filesystem.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-libraries.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-logging.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-string.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\rain-aeternum\utility-time.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
+    <ClCompile Include="..\src\rain-library-4\algorithm-libraries.cpp" />
+    <ClCompile Include="..\src\rain-library-4\condition-variable.cpp" />
+    <ClCompile Include="..\src\rain-library-4\config.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-base.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-client-manager.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-headed-managers.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-recv-param.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-recv-thread.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-server-manager.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-smtp.cpp" />
+    <ClCompile Include="..\src\rain-library-4\network-utility.cpp" />
+    <ClCompile Include="..\src\rain-library-4\rain-window.cpp" />
+    <ClCompile Include="..\src\rain-library-4\timer.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-error.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-filesystem.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-libraries.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-logging.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-string.cpp" />
+    <ClCompile Include="..\src\rain-library-4\utility-time.cpp" />
     <ClCompile Include="..\src\tab-space\main.cpp" />
-    <ClCompile Include="..\src\tab-space\rain-window.cpp" />
     <ClCompile Include="..\src\tab-space\tab-info.cpp" />
     <ClCompile Include="..\src\tab-space\tab-space-state.cpp" />
     <ClCompile Include="..\src\tab-space\webserver.cpp" />
@@ -618,106 +560,31 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\cefclient\browser\window_test_runner.cc" />
     <ClInclude Include="..\src\cefclient\browser\window_test_runner.h" />
     <ClCompile Include="..\src\shared\browser\client_app_browser.cc" />
-    <ClInclude Include="..\src\rain-aeternum\algorithm-libraries.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\condition-variable.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\config.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\gdi-plus-include.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-base.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-client-manager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-headed-managers.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-libraries.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-recv-param.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-recv-thread.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-server-manager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-smtp.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-socket-manager.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-utility.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\network-wsa-include.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\rain-libraries.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\rain-window.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\timer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-error.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-filesystem.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-libraries.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-logging.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-string.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\utility-time.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-aeternum\windows-lam-include.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
+    <ClInclude Include="..\src\rain-library-4\algorithm-libraries.h" />
+    <ClInclude Include="..\src\rain-library-4\condition-variable.h" />
+    <ClInclude Include="..\src\rain-library-4\config.h" />
+    <ClInclude Include="..\src\rain-library-4\gdi-plus-include.h" />
+    <ClInclude Include="..\src\rain-library-4\network-base.h" />
+    <ClInclude Include="..\src\rain-library-4\network-client-manager.h" />
+    <ClInclude Include="..\src\rain-library-4\network-headed-managers.h" />
+    <ClInclude Include="..\src\rain-library-4\network-libraries.h" />
+    <ClInclude Include="..\src\rain-library-4\network-recv-param.h" />
+    <ClInclude Include="..\src\rain-library-4\network-recv-thread.h" />
+    <ClInclude Include="..\src\rain-library-4\network-server-manager.h" />
+    <ClInclude Include="..\src\rain-library-4\network-smtp.h" />
+    <ClInclude Include="..\src\rain-library-4\network-socket-manager.h" />
+    <ClInclude Include="..\src\rain-library-4\network-utility.h" />
+    <ClInclude Include="..\src\rain-library-4\network-wsa-include.h" />
+    <ClInclude Include="..\src\rain-library-4\rain-libraries.h" />
+    <ClInclude Include="..\src\rain-library-4\rain-window.h" />
+    <ClInclude Include="..\src\rain-library-4\timer.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-error.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-filesystem.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-libraries.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-logging.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-string.h" />
+    <ClInclude Include="..\src\rain-library-4\utility-time.h" />
+    <ClInclude Include="..\src\rain-library-4\windows-lam-include.h" />
     <ClInclude Include="..\src\shared\browser\client_app_browser.h" />
     <ClCompile Include="..\src\shared\browser\extension_util.cc" />
     <ClInclude Include="..\src\shared\browser\extension_util.h" />
@@ -750,13 +617,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\cefclient\renderer\performance_test_tests.cc" />
     <ClCompile Include="..\src\shared\renderer\client_app_renderer.cc" />
     <ClInclude Include="..\src\shared\renderer\client_app_renderer.h" />
-    <ClInclude Include="..\src\tab-space\gdi-plus-include.h" />
-    <ClInclude Include="..\src\tab-space\rain-window.h" />
     <ClInclude Include="..\src\tab-space\tab-space-state.h" />
     <ClInclude Include="..\src\tab-space\cefclient_win.h" />
     <ClInclude Include="..\src\tab-space\tab-info.h" />
     <ClInclude Include="..\src\tab-space\webserver.h" />
-    <ClInclude Include="..\src\tab-space\windows-lam-include.h" />
     <None Include="..\src\cefclient\resources\binding.html" />
     <None Include="..\src\cefclient\resources\dialogs.html" />
     <None Include="..\src\cefclient\resources\draggable.html" />

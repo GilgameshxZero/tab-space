@@ -4,8 +4,6 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
-// #include "../tab-space/rain-window.h"
-
 #include "../tab-space/webserver.h"
 #include "../tab-space/tab-space-state.h"
 

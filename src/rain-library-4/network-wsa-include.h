@@ -1,16 +1,10 @@
 /*
-Standard
-*/
+rain-aeternum
 
-/*
 Include this for all WinAPI Winsock2 libraries, instead of winsock2 directly.
 */
 
 #pragma once
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
 
 #ifndef _WINSOCKAPI_
 #define _WINSOCKAPI_

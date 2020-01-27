@@ -168,7 +168,7 @@ namespace Rain {
 	HANDLE logMemoryLeaks(std::string out_file) {
 		if (IsDebuggerPresent()) {
 			//Redirect the error stream to a file, only if the program is debugging.
-			HANDLE mem_leak = CreateFile(out_file.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+			HANDLE mem_leak = CreateFileA(out_file.c_str(), GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
 			//Turn on debugging for memory leaks. This is automatically turned off when the build is Release.
 			_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

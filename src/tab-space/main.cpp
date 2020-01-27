@@ -7,7 +7,8 @@
 
 #include "../cefclient/browser/root_window_manager.h"
 
-#include "../tab-space/gdi-plus-include.h"
+#include "../rain-library-4/gdi-plus-include.h"
+
 #include "../tab-space/cefclient_win.h"
 #include "../tab-space/tab-space-state.h"
 #include "../tab-space/webserver.h"

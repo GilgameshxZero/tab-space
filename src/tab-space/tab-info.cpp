@@ -1,7 +1,8 @@
 #include <Windows.h>
 #include <iostream>
 
-#include "gdi-plus-include.h"
+#include "../rain-library-4/gdi-plus-include.h"
+
 #include "../tab-space/tab-info.h"
 
 TabInfo::TabInfo() {
