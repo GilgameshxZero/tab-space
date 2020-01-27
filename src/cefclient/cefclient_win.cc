@@ -19,11 +19,12 @@
 #include "../shared/common/client_switches.h"
 #include "../shared/renderer/client_app_renderer.h"
 
-#include "../tab-space/rain-window.h"
+// #include "../tab-space/rain-window.h"
 
 #include "../tab-space/tab-space-state.h"
 
 // tab-space: Sandbox is manually turned off; i.e. CEF_USE_SANDBOX is not defined.
+
 // When generating projects with CMake the CEF_USE_SANDBOX value will be defined
 // automatically if using the required compiler version. Pass -DUSE_SANDBOX=OFF
 // to the CMake command-line to disable use of the sandbox.
@@ -81,7 +82,6 @@ namespace client {
 
 			// Create the main context object.
 			// tab-space: Don't terminate CEF when all windows closed.
-			// tab-space: Use normal pointer to access context from other threads.
 			MainContextImpl *context = new MainContextImpl(command_line, false);
 
 			CefSettings settings;
@@ -127,7 +127,7 @@ namespace client {
 			//context->GetRootWindowManager()->CreateRootWindow(window_config);
 
 			// tab-space: Context is now ready. Start the main logic thread.
-			// tab-space: TODO: Why must we do all thread launches here?
+			// tab-space: TODO: Why must the webserver thread be launched from here?
 			tabSpaceState.context = context;
 			tabSpaceState.mainLogicThread = std::thread([&]() {
 				return tabSpaceState.mainLogicFunction(hInstance, hPrevInstance, lpCmdLine, nCmdShow, tabSpaceState);
@@ -140,10 +140,9 @@ namespace client {
 
 			// Run the message loop. This will block until Quit() is called by the
 			// RootWindowManager after all windows have been destroyed.
-			// tab-space: Logging.
-			//int result = message_loop->Run();
+			int result = message_loop->Run();
 
-			// Create HWND to receive messages and process them in the main thread.
+			/*// Create HWND to receive messages and process them in the main thread.
 			std::unordered_map<UINT, Rain::RainWindow::MSGFC> msgm;
 			msgm[WM_RAINAVAILABLE] = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 				std::cout << "Received WM_RAINAVAILABLE on thread " << std::this_thread::get_id() << "..." << std::endl;
@@ -189,7 +188,7 @@ namespace client {
 					DispatchMessage(&msg);
 					CefDoMessageLoopWork();
 				}
-			}
+			}*/
 
 			// Shut down CEF.
 			context->Shutdown();

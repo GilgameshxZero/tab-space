@@ -4,7 +4,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
 
-#include "../tab-space/rain-window.h"
+// #include "../tab-space/rain-window.h"
 
 #include "../tab-space/webserver.h"
 #include "../tab-space/tab-space-state.h"
@@ -96,10 +96,8 @@ void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::R
 	response->write(stream);
 }
 
-auto getCreateCurried(TabSpaceState &tabSpaceState) {
+auto getNewCurried(TabSpaceState &tabSpaceState) {
 	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		static const int TAB_WIDTH = 1920, TAB_HEIGHT = 1080;
-
 		std::string id = tabSpaceState.generateUniqueTabId();
 		tabSpaceState.tabInfos[id] = TabInfo();
 		TabInfo &tabInfo = tabSpaceState.tabInfos[id];
@@ -109,17 +107,17 @@ auto getCreateCurried(TabSpaceState &tabSpaceState) {
 		windowConfig.with_controls = false;
 		windowConfig.with_osr = false;
 		// windowConfig.initially_hidden = true;
-		windowConfig.bounds = CefRect(100, 100, TAB_WIDTH, TAB_HEIGHT);
+		windowConfig.bounds = CefRect(100, 100, tabInfo.width, tabInfo.height);
 		scoped_refptr<client::RootWindow> rootWindow = tabSpaceState.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
 
 		// Setup tabInfo.
 		tabInfo.id = id;
 		tabInfo.rootWindow = rootWindow;
+		tabInfo.jpegClsid = &tabSpaceState.jpegClsid;
 		tabInfo.captureThread = std::thread([](TabInfo *pTabInfo) {
 			pTabInfo->captureFunction();
 			}, &tabInfo
 		);
-		tabInfo.jpegClsid = &tabSpaceState.jpegClsid;
 
 		// Hand off to main thread to complete tab initialization.
 		// PostMessage(tabSpaceState.mainRWnd.hwnd, WM_RAINAVAILABLE, reinterpret_cast<WPARAM>(&tabInfo), 0);
@@ -153,7 +151,7 @@ void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::e
 void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &tabSpaceState) {
 	server.config.port = 61001;
 	server.resource["^/info$"]["GET"] = getInfo;
-	server.resource["^/create$"]["GET"] = getCreateCurried(tabSpaceState);
+	server.resource["^/new$"]["GET"] = getNewCurried(tabSpaceState);
 	server.resource["^/tab/.+$"]["GET"] = getTab;
 	server.resource["^/stream/(.+)$"]["GET"] = getStream;
 	server.default_resource["GET"] = getDefault;

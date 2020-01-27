@@ -14,7 +14,7 @@ public:
 	CLSID *jpegClsid;
 
 	std::string id;
-	int left, top, width, height;
+	int width, height;
 
 	scoped_refptr<client::RootWindow> rootWindow;
 	scoped_refptr<CefBrowser> browser;

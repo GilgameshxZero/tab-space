@@ -32,7 +32,10 @@ void TabInfo::captureFunction() {
 		PrintWindow(this->hWnd, this->hDest, 0x00000002);
 
 		Gdiplus::Bitmap bmp(this->hbmp, (HPALETTE)0);
-		bmp.Save(L"image.jpg", this->jpegClsid, NULL);
+
+		// Keep the bitmap.
+
+		// bmp.Save(L"image.jpg", this->jpegClsid, NULL);
 
 		/*std::cout << "Captured tab " << this->id << " with browser HWND " << this->hWnd << "." << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));*/
