@@ -25,7 +25,7 @@ namespace TabSpace {
 		Rain::getEncoderClsid(L"image/jpeg", &TabManager::jpegClsid);
 
 		// Setup tab destruct handler.
-		TabManager::onDestructHandler = [&state](TabManager *tabManager) {
+		TabManager::handleStateOnDestruct = [&state](TabManager *tabManager) {
 			state.tabManagers.erase(tabManager->id);
 			delete tabManager;
 		};

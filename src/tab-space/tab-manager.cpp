@@ -6,7 +6,7 @@
 
 namespace TabSpace {
 	CLSID TabManager::jpegClsid = CLSID();
-	std::function<void(TabManager *)> TabManager::onDestructHandler = nullptr;
+	std::function<void(TabManager *)> TabManager::handleStateOnDestruct = nullptr;
 
 	TabManager::TabManager() {
 		// Defaults for a new tab.
@@ -88,8 +88,9 @@ namespace TabSpace {
 			DeleteObject(this->hBmp);
 			DeleteDC(this->hDest);
 
-			// Call TabManager expiry manager.
-			TabManager::onDestructHandler(this);
+			// Prepare to destroy things.
+			this->rootWindow->Close(false);
+			TabManager::handleStateOnDestruct(this);
 		}).detach();
 	}
 }

@@ -103,14 +103,30 @@ namespace TabSpace {
 		};
 	}
 
-	void getTab(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-		serveStaticFile(response, "/tab.html");
+	auto getTabCurried(State &state)  {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Not a valid tab.");
+			} else {
+				serveStaticFile(response, "/tab.html");
+			}
+		};
 	}
 
 	auto getStreamCurried(State &state) {
 		static const std::string FRAME_BOUNDARY = "tab-space-boundary";
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				*response << "HTTP/1.1 400" << Rain::CRLF
+					<< Rain::CRLF;
+				return;
+			}
 
 			*response << "HTTP/1.1 200" << Rain::CRLF
 				<< "Content-Type: multipart/x-mixed-replace;boundary=" << FRAME_BOUNDARY << Rain::CRLF
@@ -176,7 +192,7 @@ namespace TabSpace {
 
 		// Endpoints.
 		server.resource["^/new$"]["GET"] = getNewCurried(state);
-		server.resource["^/tab/(.+)$"]["GET"] = getTab;
+		server.resource["^/tab/(.+)$"]["GET"] = getTabCurried(state);
 		server.resource["^/stream/(.+)$"]["GET"] = getStreamCurried(state);
 
 		server.default_resource["GET"] = getDefault;

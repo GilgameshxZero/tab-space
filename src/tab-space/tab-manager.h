@@ -17,7 +17,7 @@ namespace TabSpace {
 		static CLSID jpegClsid;
 
 		// Tab destruction handler.
-		static std::function<void(TabManager *)> onDestructHandler;
+		static std::function<void(TabManager *)> handleStateOnDestruct;
 
 		// Tab ID.
 		std::string id;
