@@ -131,10 +131,31 @@ void getTab(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Re
 	serveStatic(response, "/tab.html");
 }
 
-void getStream(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-	// TODO
-	std::cout << "Video stream requested for tab ID " << request->path_match[1].str() << std::endl;
-	serveStatic(response, "/video.mp4");
+auto getStreamCurried(TabSpaceState &tabSpaceState) {
+	return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+		std::string id = request->path_match[1].str();
+		std::cout << "MJPEG stream requested for tab ID " << id << std::endl;
+
+		std::string s;
+		s = "HTTP/1.1 200\r\n";
+		s += "Content-Type: multipart/x-mixed-replace;boundary=frame\r\n\r\n";
+		response->write(s.c_str(), s.length());
+		while (true) {
+			s = "";
+			s += "--frame\r\n";
+			s += "Content-Type: image/jpeg\r\n";
+			char buffer[100];
+			itoa(tabSpaceState.tabInfos[id].bufsize, buffer, 10);
+			s += "Content-Length: " + std::string(buffer) + "\r\n";
+			s += "\r\n";
+			response->write(s.c_str(), s.length());
+			response->write(tabSpaceState.tabInfos[id].data, tabSpaceState.tabInfos[id].bufsize);
+			response->write("\r\n\r\n", 4);
+			response->send();
+			//std::cout << "Sent some data." << std::endl;
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		}
+	};
 }
 
 void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
@@ -150,10 +171,11 @@ void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::e
 
 void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &tabSpaceState) {
 	server.config.port = 61001;
+	server.config.thread_pool_size = 8;
 	server.resource["^/info$"]["GET"] = getInfo;
 	server.resource["^/new$"]["GET"] = getNewCurried(tabSpaceState);
 	server.resource["^/tab/.+$"]["GET"] = getTab;
-	server.resource["^/stream/(.+)$"]["GET"] = getStream;
+	server.resource["^/stream/(.+)$"]["GET"] = getStreamCurried(tabSpaceState);
 	server.default_resource["GET"] = getDefault;
 	server.on_error = httpServerError;
 }

@@ -50,7 +50,7 @@ int webserverStart(TabSpaceState &tabSpaceState) {
 	ULONG_PTR gdiplusToken;
 	Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-	tabSpaceState.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
+	// tabSpaceState.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 	GetEncoderClsid(L"image/jpeg", &tabSpaceState.jpegClsid);
 

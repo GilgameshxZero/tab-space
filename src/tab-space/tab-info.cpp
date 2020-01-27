@@ -26,14 +26,35 @@ void TabInfo::captureFunction() {
 	this->hbmp = CreateCompatibleBitmap(this->hdc, this->width, this->height);
 	SelectObject(this->hDest, this->hbmp);
 
+	this->data = new char[1000000];
+
 	while (true) {
 		/*GetWindowRect(this->hWnd, &wndBounds);
 		BitBlt(this->hDest, 0, 0, this->width, this->height, this->hdc, wndBounds.left, wndBounds.top, SRCCOPY);*/
+
+		// TODO: 0x00000002 is very necessary for capturing GPU renders.
 		PrintWindow(this->hWnd, this->hDest, 0x00000002);
 
-		Gdiplus::Bitmap bmp(this->hbmp, (HPALETTE)0);
-
 		// Keep the bitmap.
+		Gdiplus::Bitmap bmp(this->hbmp, (HPALETTE)0);
+		IStream *istream = nullptr;
+		HRESULT hr = CreateStreamOnHGlobal(NULL, TRUE, &istream);
+		bmp.Save(istream, this->jpegClsid);
+
+		HGLOBAL hg = NULL;
+		GetHGlobalFromStream(istream, &hg);
+
+		//copy IStream to buffer
+		int bufsize = GlobalSize(hg);
+
+		//lock & unlock memory
+		LPVOID pimage = GlobalLock(hg);
+		memcpy(this->data, pimage, bufsize);
+		this->bufsize = bufsize;
+		GlobalUnlock(hg);
+
+		istream->Release();
+		// std::cout << bufsize << std::endl;
 
 		// bmp.Save(L"image.jpg", this->jpegClsid, NULL);
 

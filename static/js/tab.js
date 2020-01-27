@@ -16,6 +16,6 @@ window.addEventListener(`load`, () => {
   const tabId = tabIdSplit[tabIdSplit.length - 1];
   console.log(`Requesting stream for tab ID`, tabId);
 
-  const videoElem = document.getElementsByTagName(`video`)[0];
-  videoElem.src = `/stream/` + tabId;
+  const imgElem = document.querySelector(`.video img`);
+  imgElem.src = `/stream/` + tabId;
 });

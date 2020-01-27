@@ -6,6 +6,8 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
+#include "../tab-space/gdi-plus-include.h"
+
 // Everything we need to know about a tab.
 class TabInfo {
 public:
@@ -27,4 +29,6 @@ public:
 	void captureFunction();
 
 	// Most recent JPEG capture of the window.
+	char *data;
+	int bufsize;
 };
