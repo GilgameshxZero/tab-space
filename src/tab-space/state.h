@@ -2,7 +2,7 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
-#include "tab-info.h"
+#include "tab-manager.h"
 
 #include <thread>
 #include <random>
@@ -28,10 +28,10 @@ namespace TabSpace {
 		// RNG.
 		std::mt19937 rng;
 
-		// Mapping from ID to TabInfo. IDs are unique.
-		std::map<std::string, TabInfo> tabInfos;
+		// Mapping from ID to TabManager. IDs are unique.
+		std::map<std::string, TabManager> tabManagers;
 
-		// Function to generate a unique tab ID, at least with regards to tabInfos
+		// Function to generate a unique tab ID, at least with regards to tabManagers
 		std::string generateUniqueTabId();
 	};
 }

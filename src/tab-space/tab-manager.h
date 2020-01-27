@@ -9,9 +9,9 @@
 
 namespace TabSpace {
 	// Everything we need to know about a tab.
-	class TabInfo {
+	class TabManager {
 		public:
-		TabInfo();
+		TabManager();
 
 		// Pointer to the CLSID to the JPEG encoder, retrieved globally previously.
 		CLSID *jpegClsid;

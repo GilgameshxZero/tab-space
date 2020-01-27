@@ -6,5 +6,5 @@
 #include "state.h"
 
 namespace TabSpace {
-	void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state);
+	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state);
 }

@@ -27,7 +27,7 @@ namespace TabSpace {
 		// state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 		SimpleWeb::Server<SimpleWeb::HTTP> httpServer;
-		setupHttpServer(httpServer, state);
+		initHttpServer(httpServer, state);
 		Rain::tsCout("Webserver starting on thread ", std::this_thread::get_id(), "...", Rain::CRLF);
 		std::cout.flush();
 

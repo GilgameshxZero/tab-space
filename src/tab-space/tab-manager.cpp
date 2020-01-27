@@ -1,17 +1,17 @@
 #include "../rain-library-4/rain-libraries.h"
 
-#include "tab-info.h"
+#include "tab-manager.h"
 
 #include <iostream>
 
 namespace TabSpace {
-	TabInfo::TabInfo() {
+	TabManager::TabManager() {
 		// Defaults for a new tab.
 		this->width = 1280;
 		this->height = 720;
 	}
 
-	void TabInfo::captureFunction() {
+	void TabManager::captureFunction() {
 		// Wait until we can get the browser window.
 		this->browser = this->rootWindow->GetBrowser();
 		while (this->browser == NULL) {

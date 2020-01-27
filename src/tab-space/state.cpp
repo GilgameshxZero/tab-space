@@ -14,7 +14,7 @@ namespace TabSpace {
 				id += alphabet[this->rng() % alphabet.length()];
 			}
 
-			if (this->tabInfos.find(id) == this->tabInfos.end()) {
+			if (this->tabManagers.find(id) == this->tabManagers.end()) {
 				return id;
 			}
 

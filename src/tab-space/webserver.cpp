@@ -98,28 +98,28 @@ namespace TabSpace {
 	auto getNewCurried(State &state) {
 		return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
 			std::string id = state.generateUniqueTabId();
-			state.tabInfos[id] = TabInfo();
-			TabInfo &tabInfo = state.tabInfos[id];
+			state.tabManagers[id] = TabManager();
+			TabManager &tabManager = state.tabManagers[id];
 
 			client::RootWindowConfig windowConfig;
 			windowConfig.always_on_top = false;
 			windowConfig.with_controls = false;
 			windowConfig.with_osr = false;
 			// windowConfig.initially_hidden = true;
-			windowConfig.bounds = CefRect(100, 100, tabInfo.width, tabInfo.height);
+			windowConfig.bounds = CefRect(100, 100, tabManager.width, tabManager.height);
 			scoped_refptr<client::RootWindow> rootWindow = state.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
 
-			// Setup tabInfo.
-			tabInfo.id = id;
-			tabInfo.rootWindow = rootWindow;
-			tabInfo.jpegClsid = &state.jpegClsid;
-			tabInfo.captureThread = std::thread([](TabInfo *pTabInfo) {
-				pTabInfo->captureFunction();
-			}, &tabInfo
+			// Setup tabManager.
+			tabManager.id = id;
+			tabManager.rootWindow = rootWindow;
+			tabManager.jpegClsid = &state.jpegClsid;
+			tabManager.captureThread = std::thread([](TabManager *pTabManager) {
+				pTabManager->captureFunction();
+			}, &tabManager
 			);
 
 			// Hand off to main thread to complete tab initialization.
-			// PostMessage(state.mainRWnd.hwnd, WM_RAINAVAILABLE, reinterpret_cast<WPARAM>(&tabInfo), 0);
+			// PostMessage(state.mainRWnd.hwnd, WM_RAINAVAILABLE, reinterpret_cast<WPARAM>(&tabManager), 0);
 
 			std::cout << "Launched new tab with ID " << id << "." << std::endl;
 			response->write(id);
@@ -144,11 +144,11 @@ namespace TabSpace {
 				s += "--frame\r\n";
 				s += "Content-Type: image/jpeg\r\n";
 				char buffer[100];
-				itoa(state.tabInfos[id].bufsize, buffer, 10);
+				itoa(state.tabManagers[id].bufsize, buffer, 10);
 				s += "Content-Length: " + std::string(buffer) + "\r\n";
 				s += "\r\n";
 				response->write(s.c_str(), s.length());
-				response->write(state.tabInfos[id].data, state.tabInfos[id].bufsize);
+				response->write(state.tabManagers[id].data, state.tabManagers[id].bufsize);
 				response->write("\r\n\r\n", 4);
 				response->send();
 				//std::cout << "Sent some data." << std::endl;
@@ -168,7 +168,7 @@ namespace TabSpace {
 		// cout << "Http error: " << ec << endl;
 	}
 
-	void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
+	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
 		server.config.port = 61001;
 		server.config.thread_pool_size = 8;
 		server.resource["^/info$"]["GET"] = getInfo;

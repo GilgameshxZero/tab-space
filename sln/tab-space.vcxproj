@@ -496,7 +496,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\rain-library-4\utility-string.cpp" />
     <ClCompile Include="..\src\rain-library-4\utility-time.cpp" />
     <ClCompile Include="..\src\tab-space\main.cpp" />
-    <ClCompile Include="..\src\tab-space\tab-info.cpp" />
+    <ClCompile Include="..\src\tab-space\tab-manager.cpp" />
     <ClCompile Include="..\src\tab-space\state.cpp" />
     <ClCompile Include="..\src\tab-space\webserver.cpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp" />
@@ -622,7 +622,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="..\src\tab-space\main.h" />
     <ClInclude Include="..\src\tab-space\state.h" />
     <ClInclude Include="..\src\tab-space\cefclient_win.h" />
-    <ClInclude Include="..\src\tab-space\tab-info.h" />
+    <ClInclude Include="..\src\tab-space\tab-manager.h" />
     <ClInclude Include="..\src\tab-space\webserver.h" />
     <None Include="..\src\cefclient\resources\binding.html" />
     <None Include="..\src\cefclient\resources\dialogs.html" />
