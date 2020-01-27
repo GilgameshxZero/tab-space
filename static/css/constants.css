@@ -1,0 +1,8 @@
+:root {
+  --gradient-start: hsla(265, 100%, 75%, 100%);
+  --gradient-end: hsla(205, 100%, 75%, 100%);
+  --gradient-start-light: hsla(265, 100%, 75%, 50%);
+  --gradient-end-light: hsla(205, 100%, 75%, 50%);
+
+  --transition-time: 1s;
+}

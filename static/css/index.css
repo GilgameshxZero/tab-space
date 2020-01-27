@@ -1,0 +1,84 @@
+body {
+  font-size: calc(2 * var(--size));
+}
+
+.splash {
+  display: flex;
+  flex-flow: column nowrap;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: linear-gradient(to right, var(--gradient-start-light), var(--gradient-end-light));
+}
+
+.splash>.top {
+  display: flex;
+  flex-flow: row nowrap;
+
+  margin: auto auto calc(15 * var(--size));
+  height: calc(15 * var(--size));
+  /* Just needs to be big enough and not auto. */
+  width: calc(35 * var(--size));
+  overflow: hidden;
+
+  transition: width var(--transition-time);
+}
+
+.splash.loading>.top {
+  width: calc(15 * var(--size));
+}
+
+.splash>.top>.favicon {
+  margin: 0;
+  max-width: 100%;
+  height: 100%;
+}
+
+.splash>.top>.title {
+  margin: auto 0 auto calc(3.5 * var(--size));
+  font-size: 250%;
+}
+
+.splash>.bottom {
+  display: flex;
+  flex-flow: column nowrap;
+
+  margin: 0 auto auto;
+
+  opacity: 1;
+  transition: opacity var(--transition-time);
+}
+
+.splash>.bottom.hidden {
+  opacity: 0;
+}
+
+.splash>.bottom>.motto {
+  margin: auto auto calc(3.5 * var(--size));
+
+  text-align: center;
+  font-size: 150%;
+}
+
+.splash>.bottom>.button {
+  margin: auto;
+  padding: calc(1.5 * var(--size)) calc(2 * var(--size));
+
+  text-align: center;
+  font-size: 150%;
+
+  border: calc(0.5 * var(--size)) solid black;
+  border-radius: calc(1.5 * var(--size));
+  background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 50%, var(--gradient-start) 100%);
+  background-position: 0 0;
+  background-size: 200%;
+  
+  transition: background var(--transition-time);
+}
+
+.splash>.bottom>.button:hover {
+  background-position: 100% 0;
+
+  cursor: pointer;
+}

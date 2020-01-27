@@ -48,7 +48,7 @@ namespace TabSpace {
 
 				// Send the file in chunks.
 				// Read and send 128 KB at a time
-				static std::vector<char> buffer(131072); // Safe when server is running on one thread
+				/*static std::vector<char> buffer(131072); // Safe when server is running on one thread
 				std::streamsize read_length;
 				bool interrupted = false;
 
@@ -65,13 +65,33 @@ namespace TabSpace {
 								std::cerr << "Connection interrupted." << std::endl;
 								interrupted = true;
 							}
+							// It is okay if this line is executed first.
 							cv.notify_one();
 						});
-
-						// It is okay if this line is executed first.
 						cv.wait(lck);
 					}
-				}
+				}*/
+				// TODO: Make this non-recursive correctly.
+				class FileServer {
+					public:
+					static void read_and_send(const std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> &response, const std::shared_ptr<std::ifstream> &ifs) {
+						// Read and send 128 KB at a time
+						static std::vector<char> buffer(131072); // Safe when server is running on one thread
+						std::streamsize read_length;
+						if ((read_length = ifs->read(&buffer[0], static_cast<std::streamsize>(buffer.size())).gcount()) > 0) {
+							response->write(&buffer[0], read_length);
+							if (read_length == static_cast<std::streamsize>(buffer.size())) {
+								response->send([response, ifs](const SimpleWeb::error_code &ec) {
+									if (!ec)
+										read_and_send(response, ifs);
+									else
+										std::cerr << "Connection interrupted" << std::endl;
+								});
+							}
+						}
+					}
+				};
+				FileServer::read_and_send(response, ifs);
 			} else {
 				throw std::invalid_argument("Could not read file.");
 			}

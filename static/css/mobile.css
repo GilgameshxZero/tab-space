@@ -1,0 +1,7 @@
+:root {
+  --size: 1vmin;
+}
+
+:root.mobile {
+  --size: 1.5vmin;
+}
