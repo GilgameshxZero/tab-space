@@ -214,9 +214,6 @@
     <ClCompile Include="..\src\cefclient\cefclient_win.cc">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\tab-space\tab-space-state.cpp">
-      <Filter>tab-space</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\tab-space\tab-info.cpp">
       <Filter>tab-space</Filter>
     </ClCompile>
@@ -275,6 +272,12 @@
       <Filter>rain-library-4</Filter>
     </ClCompile>
     <ClCompile Include="..\src\rain-library-4\utility-time.cpp">
+      <Filter>rain-library-4</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\tab-space\state.cpp">
+      <Filter>tab-space</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\rain-library-4\gdi-plus-libraries.cpp">
       <Filter>rain-library-4</Filter>
     </ClCompile>
   </ItemGroup>
@@ -507,17 +510,8 @@
     <ClInclude Include="..\src\tab-space\cefclient_win.h">
       <Filter>tab-space</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\tab-space\tab-space-state.h">
-      <Filter>tab-space</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\tab-space\tab-info.h">
       <Filter>tab-space</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-library-4\algorithm-libraries.h">
-      <Filter>rain-library-4</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\rain-library-4\condition-variable.h">
-      <Filter>rain-library-4</Filter>
     </ClInclude>
     <ClInclude Include="..\src\rain-library-4\config.h">
       <Filter>rain-library-4</Filter>
@@ -586,6 +580,21 @@
       <Filter>rain-library-4</Filter>
     </ClInclude>
     <ClInclude Include="..\src\rain-library-4\windows-lam-include.h">
+      <Filter>rain-library-4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\state.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rain-library-4\gdi-plus-libraries.h">
+      <Filter>rain-library-4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\tab-space\main.h">
+      <Filter>tab-space</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rain-library-4\condition-variable.h">
+      <Filter>rain-library-4</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\rain-library-4\algorithm-libraries.h">
       <Filter>rain-library-4</Filter>
     </ClInclude>
   </ItemGroup>

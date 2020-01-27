@@ -478,6 +478,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\rain-library-4\algorithm-libraries.cpp" />
     <ClCompile Include="..\src\rain-library-4\condition-variable.cpp" />
     <ClCompile Include="..\src\rain-library-4\config.cpp" />
+    <ClCompile Include="..\src\rain-library-4\gdi-plus-libraries.cpp" />
     <ClCompile Include="..\src\rain-library-4\network-base.cpp" />
     <ClCompile Include="..\src\rain-library-4\network-client-manager.cpp" />
     <ClCompile Include="..\src\rain-library-4\network-headed-managers.cpp" />
@@ -496,7 +497,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\rain-library-4\utility-time.cpp" />
     <ClCompile Include="..\src\tab-space\main.cpp" />
     <ClCompile Include="..\src\tab-space\tab-info.cpp" />
-    <ClCompile Include="..\src\tab-space\tab-space-state.cpp" />
+    <ClCompile Include="..\src\tab-space\state.cpp" />
     <ClCompile Include="..\src\tab-space\webserver.cpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\asio_compatibility.hpp" />
     <ClInclude Include="..\Simple-Web-Server-v3.0.2\client_http.hpp" />
@@ -564,6 +565,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClInclude Include="..\src\rain-library-4\condition-variable.h" />
     <ClInclude Include="..\src\rain-library-4\config.h" />
     <ClInclude Include="..\src\rain-library-4\gdi-plus-include.h" />
+    <ClInclude Include="..\src\rain-library-4\gdi-plus-libraries.h" />
     <ClInclude Include="..\src\rain-library-4\network-base.h" />
     <ClInclude Include="..\src\rain-library-4\network-client-manager.h" />
     <ClInclude Include="..\src\rain-library-4\network-headed-managers.h" />
@@ -617,7 +619,8 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="..\src\cefclient\renderer\performance_test_tests.cc" />
     <ClCompile Include="..\src\shared\renderer\client_app_renderer.cc" />
     <ClInclude Include="..\src\shared\renderer\client_app_renderer.h" />
-    <ClInclude Include="..\src\tab-space\tab-space-state.h" />
+    <ClInclude Include="..\src\tab-space\main.h" />
+    <ClInclude Include="..\src\tab-space\state.h" />
     <ClInclude Include="..\src\tab-space\cefclient_win.h" />
     <ClInclude Include="..\src\tab-space\tab-info.h" />
     <ClInclude Include="..\src\tab-space\webserver.h" />

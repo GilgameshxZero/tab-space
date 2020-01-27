@@ -1,34 +1,40 @@
 #pragma once
 
-#include <Windows.h>
-#include <string>
-#include <thread>
-
 #include "../cefclient/browser/main_context_impl.h"
 
 #include "../rain-library-4/gdi-plus-include.h"
 
-// Everything we need to know about a tab.
-class TabInfo {
-public:
-	TabInfo();
+#include <string>
+#include <thread>
 
-	CLSID *jpegClsid;
+namespace TabSpace {
+	// Everything we need to know about a tab.
+	class TabInfo {
+		public:
+		TabInfo();
 
-	std::string id;
-	int width, height;
+		// Pointer to the CLSID to the JPEG encoder, retrieved globally previously.
+		CLSID *jpegClsid;
 
-	scoped_refptr<client::RootWindow> rootWindow;
-	scoped_refptr<CefBrowser> browser;
+		// Tab ID.
+		std::string id;
 
-	HWND hWnd;
-	HDC hdc, hDest;
-	HBITMAP hbmp;
+		// Current width and height of the tab, and thus the video capture as well.
+		int width, height;
 
-	std::thread captureThread;
-	void captureFunction();
+		// CEF handles.
+		scoped_refptr<client::RootWindow> rootWindow;
+		scoped_refptr<CefBrowser> browser;
 
-	// Most recent JPEG capture of the window.
-	char *data;
-	int bufsize;
-};
+		HWND hWnd;
+		HDC hdc, hDest;
+		HBITMAP hbmp;
+
+		std::thread captureThread;
+		void captureFunction();
+
+		// Most recent JPEG capture of the window.
+		char *data;
+		int bufsize;
+	};
+}

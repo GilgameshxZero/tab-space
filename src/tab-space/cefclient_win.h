@@ -1,11 +1,11 @@
 #pragma once
 
-#include <Windows.h>
+#include "../rain-library-4/rain-libraries.h"
 
-#include "../tab-space/tab-space-state.h"
+#include "state.h"
 
 namespace client {
 	namespace RunMain {
-		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, TabSpaceState &tabSpaceState);
+		int RunMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow, TabSpace::State &state);
 	}
 }

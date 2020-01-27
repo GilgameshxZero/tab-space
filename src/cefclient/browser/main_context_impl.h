@@ -21,7 +21,7 @@ namespace client {
 		MainContextImpl(CefRefPtr<CefCommandLine> command_line,
 			bool terminate_when_all_windows_closed);
 
-		// tab-space: Allow deletion via any method.
+		// tab-space: Allow deletion via any method so that we're not forced to use scoped_ptr.
 		// Allow deletion via scoped_ptr only.
 		// friend struct base::DefaultDeleter<MainContextImpl>;
 

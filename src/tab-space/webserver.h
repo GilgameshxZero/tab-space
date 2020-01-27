@@ -1,10 +1,10 @@
 #pragma once
 
-#include <Windows.h>
-
 #include "client_http.hpp"
 #include "server_http.hpp"
 
-#include "../tab-space/tab-space-state.h"
+#include "state.h"
 
-void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, TabSpaceState &tabSpaceState);
+namespace TabSpace {
+	void setupHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state);
+}
