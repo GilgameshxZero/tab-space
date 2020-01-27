@@ -1,102 +1,87 @@
 #include <malloc.h>
-#include <fstream>
 
-#include <boost/filesystem.hpp>
-#include <boost/dll.hpp>
+#include "client_http.hpp"
+#include "server_http.hpp"
+
+#include "../rain-library-4/rain-libraries.h"
 
 #include "webserver.h"
 #include "state.h"
 
-using namespace std;
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
 
-using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
-using HttpClient = SimpleWeb::Client<SimpleWeb::HTTP>;
+#include <fstream>
 
 namespace TabSpace {
-	void serveStatic(shared_ptr<HttpServer::Response> response, std::string requestPath) {
+	void serveStaticFile(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::string requestPath) {
+		static const boost::filesystem::path STATIC_RELATIVE_LOCATION = "../../static";
+		static const boost::filesystem::path DEFAULT_INDEX = "index.html";
+
 		// Will respond with content in the static/-directory, and its subdirectories.
-		// Default file: index.html
 		// Can for instance be used to retrieve an HTML 5 client that uses REST-resources on this server
 		try {
 			// Previously was using canonical, but that didn't seem to work.
-			// Using executable path to avoid Visual Studio debugging issues.
-			auto web_root_path = boost::filesystem::absolute(boost::dll::program_location().parent_path() / "../../static");
+			// Using executable path so that debugging in Visual Studio isn't a pain.
+			auto web_root_path = boost::filesystem::absolute(boost::dll::program_location().parent_path() / STATIC_RELATIVE_LOCATION);
 			auto path = boost::filesystem::absolute(web_root_path / requestPath);
 
 			// Check if path is within web_root_path
-			if (distance(web_root_path.begin(), web_root_path.end()) > distance(path.begin(), path.end()) ||
-				!equal(web_root_path.begin(), web_root_path.end(), path.begin()))
-				throw invalid_argument("path must be within root path");
+			if (std::distance(web_root_path.begin(), web_root_path.end()) > std::distance(path.begin(), path.end()) ||
+				!std::equal(web_root_path.begin(), web_root_path.end(), path.begin()))
+				throw std::invalid_argument("Path must be within static root path.");
 			if (boost::filesystem::is_directory(path))
-				path /= "index.html";
+				path /= DEFAULT_INDEX;
 
-			SimpleWeb::CaseInsensitiveMultimap header;
+			auto ifs = std::make_shared<std::ifstream>();
+			ifs->open(path.string(), std::ifstream::in | std::ios::binary | std::ios::ate);
 
-			header.emplace("Cache-Control", "private, no-cache, no-store, must-revalidate");
-			header.emplace("Expires", "-1");
-			header.emplace("Pragma", "no-cache");
-
-			auto ifs = make_shared<ifstream>();
-			ifs->open(path.string(), ifstream::in | ios::binary | ios::ate);
-
+			// Need to be able to open the file.
 			if (*ifs) {
 				auto length = ifs->tellg();
-				ifs->seekg(0, ios::beg);
+				ifs->seekg(0, std::ios::beg);
 
+				// Content-Length and some other headers too.
+				SimpleWeb::CaseInsensitiveMultimap header;
 				header.emplace("Content-Length", to_string(length));
 				response->write(header);
 
-				// Trick to define a recursive function within this scope (for example purposes)
-				class FileServer {
-					public:
-					static void read_and_send(const shared_ptr<HttpServer::Response> &response, const shared_ptr<ifstream> &ifs) {
-						// Read and send 128 KB at a time
-						static vector<char> buffer(131072); // Safe when server is running on one thread
-						streamsize read_length;
-						if ((read_length = ifs->read(&buffer[0], static_cast<streamsize>(buffer.size())).gcount()) > 0) {
-							response->write(&buffer[0], read_length);
-							if (read_length == static_cast<streamsize>(buffer.size())) {
-								response->send([response, ifs](const SimpleWeb::error_code &ec) {
-									if (!ec)
-										read_and_send(response, ifs);
-									else
-										cerr << "Connection interrupted." << endl;
-								}
-								);
+				// Send the file in chunks.
+				// Read and send 128 KB at a time
+				static std::vector<char> buffer(131072); // Safe when server is running on one thread
+				std::streamsize read_length;
+				bool interrupted = false;
+
+				// Waiting for callback to finish.
+				Rain::ConditionVariable cv;
+				std::unique_lock<std::mutex> lck(cv.getMutex());
+
+				while (!interrupted &&
+					(read_length = ifs->read(&buffer[0], static_cast<std::streamsize>(buffer.size())).gcount()) > 0) {
+					response->write(&buffer[0], read_length);
+					if (read_length == static_cast<std::streamsize>(buffer.size())) {
+						response->send([&interrupted, &cv](const SimpleWeb::error_code &ec) {
+							if (ec) {
+								std::cerr << "Connection interrupted." << std::endl;
+								interrupted = true;
 							}
-						}
+							cv.notify_one();
+						});
+
+						// It is okay if this line is executed first.
+						cv.wait(lck);
 					}
-				};
-				FileServer::read_and_send(response, ifs);
+				}
+			} else {
+				throw std::invalid_argument("Could not read file.");
 			}
-			else
-				throw invalid_argument("could not read file");
+		} catch (...) {
+			response->write(SimpleWeb::StatusCode::client_error_bad_request, "Emilia couldn't find what you were looking for!");
 		}
-		catch (const exception & e) {
-			response->write(SimpleWeb::StatusCode::client_error_bad_request, "Could not open path " + requestPath + ": " + e.what());
-		}
-	}
-
-	void getInfo(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		stringstream stream;
-		stream << "<h1>Request from " << request->remote_endpoint_address() << ":" << request->remote_endpoint_port() << "</h1>";
-
-		stream << request->method << " " << request->path << " HTTP/" << request->http_version;
-
-		stream << "<h2>Query Fields</h2>";
-		auto query_fields = request->parse_query_string();
-		for (auto &field : query_fields)
-			stream << field.first << ": " << field.second << "<br>";
-
-		stream << "<h2>Header Fields</h2>";
-		for (auto &field : request->header)
-			stream << field.first << ": " << field.second << "<br>";
-
-		response->write(stream);
 	}
 
 	auto getNewCurried(State &state) {
-		return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = state.generateUniqueTabId();
 			state.tabManagers[id] = TabManager();
 			TabManager &tabManager = state.tabManagers[id];
@@ -106,76 +91,88 @@ namespace TabSpace {
 			windowConfig.with_controls = false;
 			windowConfig.with_osr = false;
 			// windowConfig.initially_hidden = true;
-			windowConfig.bounds = CefRect(100, 100, tabManager.width, tabManager.height);
+			windowConfig.bounds = CefRect(0, 0, tabManager.width, tabManager.height);
 			scoped_refptr<client::RootWindow> rootWindow = state.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
 
 			// Setup tabManager.
 			tabManager.id = id;
 			tabManager.rootWindow = rootWindow;
-			tabManager.jpegClsid = &state.jpegClsid;
-			tabManager.captureThread = std::thread([](TabManager *pTabManager) {
-				pTabManager->captureFunction();
-			}, &tabManager
-			);
+			tabManager.startCaptureThread();
 
-			// Hand off to main thread to complete tab initialization.
-			// PostMessage(state.mainRWnd.hwnd, WM_RAINAVAILABLE, reinterpret_cast<WPARAM>(&tabManager), 0);
-
-			std::cout << "Launched new tab with ID " << id << "." << std::endl;
 			response->write(id);
 		};
 	}
 
-	void getTab(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		serveStatic(response, "/tab.html");
+	void getTab(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+		serveStaticFile(response, "/tab.html");
 	}
 
 	auto getStreamCurried(State &state) {
-		return [&](shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
+		static const std::string FRAME_BOUNDARY = "tab-space-boundary";
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = request->path_match[1].str();
-			std::cout << "MJPEG stream requested for tab ID " << id << std::endl;
 
-			std::string s;
-			s = "HTTP/1.1 200\r\n";
-			s += "Content-Type: multipart/x-mixed-replace;boundary=frame\r\n\r\n";
-			response->write(s.c_str(), s.length());
-			while (true) {
-				s = "";
-				s += "--frame\r\n";
-				s += "Content-Type: image/jpeg\r\n";
-				char buffer[100];
-				itoa(state.tabManagers[id].bufsize, buffer, 10);
-				s += "Content-Length: " + std::string(buffer) + "\r\n";
-				s += "\r\n";
-				response->write(s.c_str(), s.length());
-				response->write(state.tabManagers[id].data, state.tabManagers[id].bufsize);
-				response->write("\r\n\r\n", 4);
-				response->send();
-				//std::cout << "Sent some data." << std::endl;
-				std::this_thread::sleep_for(std::chrono::milliseconds(50));
-			}
+			*response << "HTTP/1.1 200" << Rain::CRLF
+				<< "Content-Type: multipart/x-mixed-replace;boundary=" << FRAME_BOUNDARY << Rain::CRLF
+				<< Rain::CRLF;
+
+			// Start separate thread to push data through.
+			std::thread([response](TabManager *tabManager) {
+				std::thread::id threadId = std::this_thread::get_id();
+				tabManager->listeningThreads.insert(threadId);
+				Rain::tsCout("Stream requested for tab ", tabManager->id, " on thread ", threadId, " [", tabManager->listeningThreads.size(), " total].",  Rain::CRLF);
+				std::cout.flush();
+
+				Rain::ConditionVariable cv;
+				std::unique_lock<std::mutex> lck(cv.getMutex());
+				bool active = true;
+
+				while (active) {
+					*response << "--" << FRAME_BOUNDARY << Rain::CRLF
+						<< "Content-Type: image/jpeg" << Rain::CRLF
+						<< "Content-Length: " << Rain::tToStr(tabManager->jpegData.size()) << Rain::CRLF
+						<< Rain::CRLF;
+					response->write(&tabManager->jpegData[0], tabManager->jpegData.size());
+					*response << Rain::CRLF << Rain::CRLF;
+					response->send([&](const SimpleWeb::error_code &ec) {
+						if (ec) {
+							active = false;
+							tabManager->listeningThreads.erase(threadId);
+							Rain::tsCout("Stream for tab ", tabManager->id, " on thread ", threadId, " closed by with value ", ec.value(), " [", tabManager->listeningThreads.size(), " total].", Rain::CRLF);
+							std::cout.flush();
+						}
+						cv.notify_one();
+					});
+					// TODO: How to do better sync?
+					std::this_thread::sleep_for(std::chrono::milliseconds(33));
+					cv.wait(lck);
+				}
+			}, &state.tabManagers[id]).detach();
 		};
 	}
 
-	void getDefault(shared_ptr<HttpServer::Response> response, shared_ptr<HttpServer::Request> request) {
-		// Default GET-example. If no other matches, this anonymous function will be called.
-		serveStatic(response, request->path);
+	void getDefault(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+		serveStaticFile(response, request->path);
 	}
 
-	void httpServerError(shared_ptr<HttpServer::Request> request, const SimpleWeb::error_code &ec) {
-		// Handle errors here
-		// Note that connection timeouts will also call this handle with ec set to SimpleWeb::errc::operation_canceled
-		// cout << "Http error: " << ec << endl;
+	void onError(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request, const SimpleWeb::error_code &ec) {
+		// Do nothing for now.
 	}
 
 	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
+		// Default.
+		// TODO: Read from command line.
 		server.config.port = 61001;
-		server.config.thread_pool_size = 8;
-		server.resource["^/info$"]["GET"] = getInfo;
+
+		// Single-threaded. Must change buffer in serveStaticFile if this is modified.
+		server.config.thread_pool_size = 1;
+
+		// Endpoints.
 		server.resource["^/new$"]["GET"] = getNewCurried(state);
-		server.resource["^/tab/.+$"]["GET"] = getTab;
+		server.resource["^/tab/(.+)$"]["GET"] = getTab;
 		server.resource["^/stream/(.+)$"]["GET"] = getStreamCurried(state);
+
 		server.default_resource["GET"] = getDefault;
-		server.on_error = httpServerError;
+		server.on_error = onError;
 	}
 }

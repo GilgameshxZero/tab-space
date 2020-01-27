@@ -94,6 +94,9 @@ namespace client {
 			// Populate the settings based on command line arguments.
 			context->PopulateSettings(&settings);
 
+			// tab-space: Don't clutter stdout.
+			settings.log_severity = cef_log_severity_t::LOGSEVERITY_DISABLE;
+
 			// Create the main message loop object.
 			scoped_ptr<MainMessageLoop> message_loop;
 			if (settings.multi_threaded_message_loop)

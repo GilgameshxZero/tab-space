@@ -13,8 +13,8 @@ namespace TabSpace {
 		public:
 		TabManager();
 
-		// Pointer to the CLSID to the JPEG encoder, retrieved globally previously.
-		CLSID *jpegClsid;
+		// CLSID to the JPEG encoder, retrieved globally previously.
+		static CLSID jpegClsid;
 
 		// Tab ID.
 		std::string id;
@@ -26,15 +26,18 @@ namespace TabSpace {
 		scoped_refptr<client::RootWindow> rootWindow;
 		scoped_refptr<CefBrowser> browser;
 
+		// Capturing variables
 		HWND hWnd;
-		HDC hdc, hDest;
-		HBITMAP hbmp;
+		HDC hDc, hDest;
+		HBITMAP hBmp;
 
-		std::thread captureThread;
-		void captureFunction();
+		// Launches a thread, once we have set rootWindow, id, and jpegClsid.
+		void startCaptureThread();
 
 		// Most recent JPEG capture of the window.
-		char *data;
-		int bufsize;
+		std::vector<char> jpegData;
+
+		// All threads which are reading from the JPEG capture.
+		std::set<std::thread::id> listeningThreads;
 	};
 }

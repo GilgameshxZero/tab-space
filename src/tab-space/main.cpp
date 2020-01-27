@@ -9,6 +9,7 @@
 
 #include "cefclient_win.h"
 #include "state.h"
+#include "tab-manager.h"
 #include "webserver.h"
 
 #include <chrono>
@@ -21,7 +22,7 @@ namespace TabSpace {
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-		Rain::getEncoderClsid(L"image/jpeg", &state.jpegClsid);
+		Rain::getEncoderClsid(L"image/jpeg", &TabManager::jpegClsid);
 
 		// Random seed for tab IDs.
 		// state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());

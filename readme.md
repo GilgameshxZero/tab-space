@@ -69,7 +69,6 @@ ssh -p 2222 -R tab.gilgamesh.cc:80:127.0.0.1:61001 gilgamesh.cc
 Endpoint|Usage
 -|-
 `/`|Homepage
-`/info`|Testing endpoint. Should return some basic information about the HTTP multiplexer.
 `/new`|Launches tab on the backend. Returns tab ID.
 `/tab/.+`|Proxy for `tab.html`, with some tab ID enforced.
 `/stream/.+`|MJPEG stream for some tab ID.
