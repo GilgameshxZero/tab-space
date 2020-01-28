@@ -70,5 +70,7 @@ Endpoint|Usage
 -|-
 `/`|Homepage
 `/new`|Launches tab on the backend. Returns tab ID.
-`/tab/.+`|Proxy for `tab.html`, with some tab ID enforced.
-`/stream/.+`|MJPEG stream for some tab ID.
+`/tab/(.+)`|Proxy for `tab.html`, with tab \g1 enforced.
+`/stream/(.+)`|MJPEG stream for tab \g1.
+`/action/(.+)/mouse`|Front-end mouse event for tab \g1.
+`/action/(.+)/key`|Front-end keyboard event for tab \g1.

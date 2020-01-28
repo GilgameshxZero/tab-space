@@ -8,6 +8,18 @@ function testApplyMobileStyling() {
   }
 }
 
+// Send XHR for data.
+function requestData(url, onResponse) {
+  const xhr = new XMLHttpRequest();
+  xhr.open(`GET`, url, true);
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState !== 4) return;
+    if (xhr.status !== 200) onResponse(null);
+    else onResponse(xhr.responseText);
+  };
+  xhr.send();
+};
+
 window.addEventListener(`load`, () => {
   testApplyMobileStyling();
 
@@ -15,4 +27,10 @@ window.addEventListener(`load`, () => {
     document.querySelector(`.splash>.bottom`).classList.remove(`hidden`);
   });
   document.querySelector(`.splash`).classList.remove(`loading`);
+  
+  document.querySelector(`.splash>.bottom>.button`).addEventListener(`click`, () => {
+    requestData(`/new`, (responseText) => {
+      window.location = `/tab/${responseText}`;
+    })
+  });
 });

@@ -10,8 +10,8 @@ namespace TabSpace {
 
 	TabManager::TabManager() {
 		// Defaults for a new tab.
-		this->width = 1920;
-		this->height = 1080;
+		this->width = 1280;
+		this->height = 720;
 
 		this->rootWindow = NULL;
 		this->id = std::string();
@@ -24,6 +24,8 @@ namespace TabSpace {
 			std::this_thread::sleep_for(std::chrono::milliseconds(17));
 			this->browser = this->rootWindow->GetBrowser();
 		}
+		this->host = this->browser->GetHost();
+		this->host->SetZoomLevel(-2);
 
 		// Create the capture objects.
 		this->hWnd = this->browser->GetHost()->GetWindowHandle();
@@ -38,7 +40,7 @@ namespace TabSpace {
 
 			// For JPEG compression options.
 			Gdiplus::EncoderParameters encoderParameters;
-			ULONG quality = 30;
+			ULONG quality = 40;
 			encoderParameters.Count = 1;
 			encoderParameters.Parameter[0].Guid = Gdiplus::EncoderQuality;
 			encoderParameters.Parameter[0].Type = Gdiplus::EncoderParameterValueTypeLong;

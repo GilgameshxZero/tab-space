@@ -10,11 +10,13 @@
 
 #include <boost/filesystem.hpp>
 #include <boost/dll.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include <fstream>
 
 namespace TabSpace {
-	void serveStaticFile(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::string requestPath) {
+	void serveStaticFile(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::string requestPath, SimpleWeb::StatusCode statusCode) {
 		static const boost::filesystem::path STATIC_RELATIVE_LOCATION = "../../static";
 		static const boost::filesystem::path DEFAULT_INDEX = "index.html";
 
@@ -28,13 +30,21 @@ namespace TabSpace {
 
 			// Check if path is within web_root_path
 			if (std::distance(web_root_path.begin(), web_root_path.end()) > std::distance(path.begin(), path.end()) ||
-				!std::equal(web_root_path.begin(), web_root_path.end(), path.begin()))
+				!std::equal(web_root_path.begin(), web_root_path.end(), path.begin())) {
 				throw std::invalid_argument("Path must be within static root path.");
+			}
 			if (boost::filesystem::is_directory(path))
 				path /= DEFAULT_INDEX;
 
 			auto ifs = std::make_shared<std::ifstream>();
 			ifs->open(path.string(), std::ifstream::in | std::ios::binary | std::ios::ate);
+
+			// Handle as 404.
+			if (!*ifs) {
+				path = boost::filesystem::absolute(web_root_path / "/404.html");
+				ifs->open(path.string(), std::ifstream::in | std::ios::binary | std::ios::ate);
+				statusCode = SimpleWeb::StatusCode::client_error_bad_request;
+			}
 
 			// Need to be able to open the file.
 			if (*ifs) {
@@ -44,7 +54,7 @@ namespace TabSpace {
 				// Content-Length and some other headers too.
 				SimpleWeb::CaseInsensitiveMultimap header;
 				header.emplace("Content-Length", to_string(length));
-				response->write(header);
+				response->write(statusCode, header);
 
 				// Send the file in chunks.
 				// Read and send 128 KB at a time
@@ -96,7 +106,7 @@ namespace TabSpace {
 				throw std::invalid_argument("Could not read file.");
 			}
 		} catch (...) {
-			response->write(SimpleWeb::StatusCode::client_error_bad_request, "Emilia couldn't find what you were looking for!");
+			response->write(SimpleWeb::StatusCode::client_error_bad_request, "Bad Request.");
 		}
 	}
 
@@ -110,6 +120,7 @@ namespace TabSpace {
 			windowConfig.always_on_top = false;
 			windowConfig.with_controls = false;
 			windowConfig.with_osr = false;
+			// windowConfig.url = "https://www.dunnbypaul.net/js_mouse/";
 			// windowConfig.initially_hidden = true;
 			windowConfig.bounds = CefRect(0, 0, tabManager.width, tabManager.height);
 			scoped_refptr<client::RootWindow> rootWindow = state.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
@@ -123,15 +134,15 @@ namespace TabSpace {
 		};
 	}
 
-	auto getTabCurried(State &state)  {
+	auto getTabCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = request->path_match[1].str();
 
 			// Check that the ID is valid.
 			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Not a valid tab.");
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
 			} else {
-				serveStaticFile(response, "/tab.html");
+				serveStaticFile(response, "/tab.html", SimpleWeb::StatusCode::success_ok);
 			}
 		};
 	}
@@ -143,8 +154,7 @@ namespace TabSpace {
 
 			// Check that the ID is valid.
 			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				*response << "HTTP/1.1 400" << Rain::CRLF
-					<< Rain::CRLF;
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
 				return;
 			}
 
@@ -160,7 +170,7 @@ namespace TabSpace {
 				if (tabManager->listeningThreads.size() == 1) {
 					tabManager->nonZeroListenerCV.notify_one();
 				}
-				Rain::tsCout("Stream requested for tab ", tabManager->id, " on thread ", threadId, " [", tabManager->listeningThreads.size(), " total].",  Rain::CRLF);
+				Rain::tsCout("Stream requested for tab ", tabManager->id, " on thread ", threadId, " [", tabManager->listeningThreads.size(), " total].", Rain::CRLF);
 				tabManager->listenerMutex.unlock();
 				std::cout.flush();
 
@@ -187,15 +197,66 @@ namespace TabSpace {
 						cv.notify_one();
 					});
 					// TODO: How to do better sync?
-					std::this_thread::sleep_for(std::chrono::milliseconds(33));
+					std::this_thread::sleep_for(std::chrono::milliseconds(50));
 					cv.wait(lck);
 				}
 			}, state.tabManagers[id]).detach();
 		};
 	}
 
+	auto getActionMouseCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+
+			// Unwrap JSON.
+			boost::property_tree::ptree propertyTree;
+			std::istringstream iss(request->content.string());
+			boost::property_tree::read_json(iss, propertyTree);
+
+			CefMouseEvent cefMouseEvent;
+			cefMouseEvent.x = propertyTree.get<double>("x") * 1280 / 1.5;
+			cefMouseEvent.y = propertyTree.get<double>("y") * 720 / 1.5;
+			bool mouseUp = propertyTree.get<std::string>("direction") == "up";
+			state.tabManagers[id]->host->SendMouseClickEvent(cefMouseEvent, cef_mouse_button_type_t::MBT_LEFT, mouseUp, 1);
+		};
+	}
+
+	auto getActionKeyCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+
+			// Unwrap JSON.
+			boost::property_tree::ptree propertyTree;
+			std::istringstream iss(request->content.string());
+			boost::property_tree::read_json(iss, propertyTree);
+
+			std::string key = propertyTree.get<std::string>("key");
+			WPARAM vk = 0x5A;
+			UINT scan = MapVirtualKey(vk, 0);
+			LPARAM lParam = 0x00000001 | (LPARAM) (scan << 16);  // Scan code, repeat=1
+
+			CefKeyEvent cefKeyEvent;
+			cefKeyEvent.windows_key_code = vk;
+			cefKeyEvent.native_key_code = lParam;
+			cefKeyEvent.is_system_key = 0;
+			cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
+			cefKeyEvent.modifiers = 0;
+			state.tabManagers[id]->host->SendKeyEvent(cefKeyEvent);
+		};
+	}
+
 	void getDefault(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-		serveStaticFile(response, request->path);
+		serveStaticFile(response, request->path, SimpleWeb::StatusCode::success_ok);
 	}
 
 	void onError(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request, const SimpleWeb::error_code &ec) {
@@ -214,6 +275,8 @@ namespace TabSpace {
 		server.resource["^/new$"]["GET"] = getNewCurried(state);
 		server.resource["^/tab/(.+)$"]["GET"] = getTabCurried(state);
 		server.resource["^/stream/(.+)$"]["GET"] = getStreamCurried(state);
+		server.resource["^/action/(.+)/mouse$"]["POST"] = getActionMouseCurried(state);
+		server.resource["^/action/(.+)/key"]["POST"] = getActionKeyCurried(state);
 
 		server.default_resource["GET"] = getDefault;
 		server.on_error = onError;

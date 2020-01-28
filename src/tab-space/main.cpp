@@ -31,7 +31,7 @@ namespace TabSpace {
 		};
 
 		// Random seed for tab IDs.
-		// state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
+		state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
 		SimpleWeb::Server<SimpleWeb::HTTP> httpServer;
 		initHttpServer(httpServer, state);

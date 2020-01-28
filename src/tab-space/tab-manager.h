@@ -28,6 +28,7 @@ namespace TabSpace {
 		// CEF handles.
 		scoped_refptr<client::RootWindow> rootWindow;
 		scoped_refptr<CefBrowser> browser;
+		scoped_refptr<CefBrowserHost> host;
 
 		// Capturing variables.
 		HWND hWnd;
