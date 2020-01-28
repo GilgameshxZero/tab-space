@@ -25,7 +25,7 @@ namespace TabSpace {
 			this->browser = this->rootWindow->GetBrowser();
 		}
 		this->host = this->browser->GetHost();
-		this->host->SetZoomLevel(-2);
+		this->host->SetAudioMuted(true);
 
 		// Create the capture objects.
 		this->hWnd = this->browser->GetHost()->GetWindowHandle();
@@ -53,6 +53,8 @@ namespace TabSpace {
 			IStream *iStream = nullptr;
 			HGLOBAL hg = NULL;
 			while (true) { // Only breaks if tab expires.
+				this->host->SetZoomLevel(-2);
+
 				// Check that we still have listeners.
 				if (this->listeningThreads.size() == 0) {
 					// Tabs expire in 15 seconds without listeners.

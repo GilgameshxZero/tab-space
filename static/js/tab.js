@@ -15,7 +15,7 @@ function sendXhr(url, onResponse, body) {
 window.addEventListener(`load`, () => {
   // Get the tab ID from the URL.
   const idSplit = window.location.href.split(`/`);
-  const id = idSplit[idSplit.length - 1];
+  const id = idSplit[idSplit.length - 1].split(`?`)[0];
 
   const videoImgElem = document.querySelector(`.video`);
   videoImgElem.src = `/stream/${id}`;
