@@ -18,6 +18,8 @@ namespace TabSpace {
 	}
 
 	void TabManager::startCaptureThread() {
+		static const UINT JPEG_QUALITY = 50;
+
 		// Wait until we can get the browser window.
 		this->browser = this->rootWindow->GetBrowser();
 		while (this->browser == NULL) {
@@ -25,6 +27,8 @@ namespace TabSpace {
 			this->browser = this->rootWindow->GetBrowser();
 		}
 		this->host = this->browser->GetHost();
+
+		// TODO: Audio.
 		this->host->SetAudioMuted(true);
 
 		// Create the capture objects.
@@ -40,7 +44,7 @@ namespace TabSpace {
 
 			// For JPEG compression options.
 			Gdiplus::EncoderParameters encoderParameters;
-			ULONG quality = 40;
+			UINT quality = JPEG_QUALITY;
 			encoderParameters.Count = 1;
 			encoderParameters.Parameter[0].Guid = Gdiplus::EncoderQuality;
 			encoderParameters.Parameter[0].Type = Gdiplus::EncoderParameterValueTypeLong;
@@ -53,13 +57,14 @@ namespace TabSpace {
 			IStream *iStream = nullptr;
 			HGLOBAL hg = NULL;
 			while (true) { // Only breaks if tab expires.
-				this->host->SetZoomLevel(-2);
+				// TODO: Lower DPI on display instead.
+				// this->host->SetZoomLevel(-2);
 
 				// Check that we still have listeners.
 				if (this->listeningThreads.size() == 0) {
-					// Tabs expire in 15 seconds without listeners.
+					// Tabs expire in 60 seconds without listeners.
 					Rain::tsCout("Paused capturing for tab ", this->id, ".", Rain::CRLF);
-					if (this->nonZeroListenerCV.wait_for(lck, std::chrono::seconds(15)) == false) {
+					if (this->nonZeroListenerCV.wait_for(lck, std::chrono::seconds(60)) == false) {
 						Rain::tsCout("Tab ", this->id, " has expired due to inactivity.", Rain::CRLF);
 						break;
 					} else {

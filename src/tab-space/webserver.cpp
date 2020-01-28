@@ -120,7 +120,6 @@ namespace TabSpace {
 			windowConfig.always_on_top = false;
 			windowConfig.with_controls = false;
 			windowConfig.with_osr = false;
-			// windowConfig.url = "https://www.dunnbypaul.net/js_mouse/";
 			// windowConfig.initially_hidden = true;
 			windowConfig.bounds = CefRect(0, 0, tabManager.width, tabManager.height);
 			scoped_refptr<client::RootWindow> rootWindow = state.context->GetRootWindowManager()->CreateRootWindow(windowConfig);
@@ -219,10 +218,19 @@ namespace TabSpace {
 			boost::property_tree::read_json(iss, propertyTree);
 
 			CefMouseEvent cefMouseEvent;
-			cefMouseEvent.x = propertyTree.get<double>("x") * 1280 / 1.5;
-			cefMouseEvent.y = propertyTree.get<double>("y") * 720 / 1.5;
+			// TODO: Calculate DPI of screen.
+			static const double DPI = 1;
+
+			cefMouseEvent.x = propertyTree.get<double>("x") / DPI;
+			cefMouseEvent.y = propertyTree.get<double>("y") / DPI;
 			bool mouseUp = propertyTree.get<std::string>("direction") == "up";
-			state.tabManagers[id]->host->SendMouseClickEvent(cefMouseEvent, cef_mouse_button_type_t::MBT_LEFT, mouseUp, 1);
+
+			std::string type = propertyTree.get<std::string>("type");
+			if (type == "lclick") {
+				state.tabManagers[id]->host->SendMouseClickEvent(cefMouseEvent, cef_mouse_button_type_t::MBT_LEFT, mouseUp, 1);
+			} else if (type == "move") {
+				state.tabManagers[id]->host->SendMouseMoveEvent(cefMouseEvent, false);
+			}
 		};
 	}
 
@@ -235,23 +243,102 @@ namespace TabSpace {
 			}
 			response->write(SimpleWeb::StatusCode::success_ok);
 
+			// Handlers for different types of keys. Do inside lambda to initiate static const.
+			static const std::map<std::pair<std::string, std::string>, std::function<void(TabManager *)>> keyHandlers = []() {
+				std::map<std::pair<std::string, std::string>, std::function<void(TabManager *)>> keyHandlerProxy;
+
+				// Helper functions.
+				static const auto constructBasicCefKeyEvent = [](CefKeyEvent &cefKeyEvent, CHAR character) {
+					BYTE vkCode = LOBYTE(VkKeyScan(character));
+					UINT scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
+					cefKeyEvent.native_key_code = 0x00000001 | (LPARAM) (scanCode << 16);  // Scan code, repeat=1.
+					cefKeyEvent.windows_key_code = vkCode;
+				};
+				static const auto constructBasicCefKeyEventWithVkCode = [](CefKeyEvent &cefKeyEvent, BYTE vkCode) {
+					UINT scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
+					cefKeyEvent.native_key_code = 0x00000001 | (LPARAM) (scanCode << 16);  // Scan code, repeat=1.
+					cefKeyEvent.windows_key_code = vkCode;
+				};
+				static const auto constructBasicDownKeyHandler = [](char keyCharacter) {
+					return [keyCharacter](TabManager *tabManager) {
+						CefKeyEvent cefKeyEvent;
+						constructBasicCefKeyEvent(cefKeyEvent, keyCharacter);
+						cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
+						tabManager->host->SendKeyEvent(cefKeyEvent);
+						cefKeyEvent.windows_key_code = keyCharacter;
+						cefKeyEvent.type = KEYEVENT_CHAR;
+						tabManager->host->SendKeyEvent(cefKeyEvent);
+					};
+				};
+				static const auto constructBasicUpKeyHandler = [](char keyCharacter) {
+					return [keyCharacter](TabManager *tabManager) {
+						CefKeyEvent cefKeyEvent;
+						constructBasicCefKeyEvent(cefKeyEvent, keyCharacter);
+						cefKeyEvent.native_key_code |= 0xC0000000;  // Bits 30 and 31 should be always 1 for WM_KEYUP.
+						cefKeyEvent.type = KEYEVENT_KEYUP;
+						tabManager->host->SendKeyEvent(cefKeyEvent);
+					};
+				};
+
+				// Most of the ASCII keys.
+				for (char a : " !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`{|}~") {
+					keyHandlerProxy[std::make_pair("down", std::string(1, a))] = constructBasicDownKeyHandler(a);
+					keyHandlerProxy[std::make_pair("up", std::string(1, a))] = constructBasicUpKeyHandler(a);
+				}
+
+				// Others.
+				keyHandlerProxy[std::make_pair("down", "Enter")] = [](TabManager *tabManager) {
+					CefKeyEvent cefKeyEvent;
+					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_RETURN);
+					cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+					cefKeyEvent.windows_key_code = '\n';
+					cefKeyEvent.type = KEYEVENT_CHAR;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+				};
+				keyHandlerProxy[std::make_pair("up", "Enter")] = [](TabManager *tabManager) {
+					CefKeyEvent cefKeyEvent;
+					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_RETURN);
+					cefKeyEvent.native_key_code |= 0xC0000000;
+					cefKeyEvent.type = KEYEVENT_KEYUP;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+				};
+				keyHandlerProxy[std::make_pair("down", "Backspace")] = [](TabManager *tabManager) {
+					CefKeyEvent cefKeyEvent;
+					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_BACK);
+					cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+					cefKeyEvent.windows_key_code = '\b';
+					cefKeyEvent.type = KEYEVENT_CHAR;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+				};
+				keyHandlerProxy[std::make_pair("up", "Backspace")] = [](TabManager *tabManager) {
+					CefKeyEvent cefKeyEvent;
+					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_BACK);
+					cefKeyEvent.native_key_code |= 0xC0000000;
+					cefKeyEvent.type = KEYEVENT_KEYUP;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+				};
+
+				return keyHandlerProxy;
+			}();
+
 			// Unwrap JSON.
 			boost::property_tree::ptree propertyTree;
 			std::istringstream iss(request->content.string());
 			boost::property_tree::read_json(iss, propertyTree);
 
-			std::string key = propertyTree.get<std::string>("key");
-			WPARAM vk = 0x5A;
-			UINT scan = MapVirtualKey(vk, 0);
-			LPARAM lParam = 0x00000001 | (LPARAM) (scan << 16);  // Scan code, repeat=1
+			std::string direction = propertyTree.get<std::string>("direction"),
+				key = propertyTree.get<std::string>("key");
 
-			CefKeyEvent cefKeyEvent;
-			cefKeyEvent.windows_key_code = vk;
-			cefKeyEvent.native_key_code = lParam;
-			cefKeyEvent.is_system_key = 0;
-			cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
-			cefKeyEvent.modifiers = 0;
-			state.tabManagers[id]->host->SendKeyEvent(cefKeyEvent);
+			// Construct the right parameters for CefKeyEvent.
+			auto it = keyHandlers.find(std::make_pair(direction, key));
+			if (it == keyHandlers.end()) {
+				Rain::tsCout("Can't handle this key: (", direction, ", ", key, ")!", Rain::CRLF);
+				std::cout.flush();
+			} else {
+				it->second(state.tabManagers[id]);
+			}
 		};
 	}
 

@@ -61,6 +61,10 @@ namespace client {
 			CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
 			command_line->InitFromString(::GetCommandLineW());
 
+			// tab-space: TODO: Why doesn't this work? DPI support.
+			command_line->AppendSwitchWithValue("high-dpi-support", "1");
+			command_line->AppendSwitchWithValue("force-device-scale-factor", "1");
+
 			// Create a ClientApp of the correct type.
 			CefRefPtr<CefApp> app;
 			ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);
@@ -89,7 +93,7 @@ namespace client {
 
 			// Applications should specify a unique GUID here to enable trusted downloads.
 			CefString(&settings.application_client_id_for_file_scanning)
-				.FromString("9A8DE24D-B822-4C6C-8259-5A848FEA1E68");
+				.FromString("7de15061-6d69-4cdb-9023-5fc8b98c5c06");
 
 			// Populate the settings based on command line arguments.
 			context->PopulateSettings(&settings);
