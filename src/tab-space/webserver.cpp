@@ -668,6 +668,16 @@ namespace TabSpace {
 				return;
 			}
 
+			// Check lengths.
+			if (username.length() < 3) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Username is too short.");
+				return;
+			}
+			if (username.length() > 20) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Username is too long.");
+				return;
+			}
+
 			// Check if username is already taken.
 			if (state.userLoginInfo.find(username) != state.userLoginInfo.end()) {
 				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Username is taken.");
