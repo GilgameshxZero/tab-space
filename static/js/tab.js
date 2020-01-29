@@ -9,9 +9,9 @@ function testApplyMobileStyling() {
 }
 
 // Send XHR for data.
-function sendXhr(url, onResponse, body) {
+function sendXhr(method, url, onResponse, body) {
   const xhr = new XMLHttpRequest();
-  xhr.open(`POST`, url, true);
+  xhr.open(method, url, true);
   xhr.onreadystatechange = () => {
     if (xhr.readyState !== 4) return;
     if (onResponse != null) {
@@ -22,7 +22,7 @@ function sendXhr(url, onResponse, body) {
   xhr.send(body);
 };
 
-function sendMouseAction(id, event, videoImgElem, type, direction) {
+function sendMouseAction(state, id, event, videoImgElem, type, direction) {
   // TODO.
   const sourceWidth = 1280;
   const sourceHeight = 720;
@@ -30,19 +30,50 @@ function sendMouseAction(id, event, videoImgElem, type, direction) {
   const videoImgElemBounds = videoImgElem.getBoundingClientRect();
   const width = videoImgElemBounds.right - videoImgElemBounds.left;
   const height = videoImgElemBounds.bottom - videoImgElemBounds.top;
-  const x = event.clientX - videoImgElemBounds.left;
-  const y = event.clientY - videoImgElemBounds.top;
+  let x = (event.clientX - videoImgElemBounds.left) / width;
+  let y = (event.clientY - videoImgElemBounds.top) / height;
+  
+  if (type === `lclick`) {
+    if (direction === `down`) {
+      state.mouseLDown = true;
+    } else if (direction === `up`) {
+      state.mouseLDown = false;
+    }
+  }
+
+  // If mouse L button is held down, then clamp x and y.
+  if (state.mouseLDown) {
+    x = Math.min(Math.max(x, 0), 1);
+    y = Math.min(Math.max(y, 0), 1);
+  } else {
+    // If out of bounds, don't send the event.
+    if (x < 0 || x > 1 || y < 0 || y > 1) {
+      return;
+    }
+  }
+
+  x = x * sourceWidth - 0.01;
+  y = y * sourceHeight - 0.01;
+
   const eventJsonString = JSON.stringify({
     "type": type,
     "direction": direction,
-    "x": x / width * sourceWidth,
-    "y": y / height * sourceHeight,
+    "x": x,
+    "y": y,
+    "wheelDeltaX": -event.deltaX * state.WHEEL_EVENT_MULTIPLIER,
+    "wheelDeltaY": -event.deltaY * state.WHEEL_EVENT_MULTIPLIER,
   });
-  sendXhr(`/action/${id}/mouse`, null, eventJsonString);
+  sendXhr(`POST`, `/action/${id}/mouse`, null, eventJsonString);
 }
 
 window.addEventListener(`load`, () => {
   testApplyMobileStyling();
+
+  const state = {
+    WHEEL_EVENT_MULTIPLIER: 25,
+
+    mouseLDown: false,
+  };
 
   // Get the tab ID from the URL.
   const idSplit = window.location.href.split(`/`);
@@ -51,6 +82,17 @@ window.addEventListener(`load`, () => {
   const videoImgElem = document.querySelector(`.video`);
   videoImgElem.src = `/stream/${id}`;
 
+  // Controls panel.
+  document.querySelector(`.back`).addEventListener(`click`, () => {
+    sendXhr(`POST`, `/control/${id}/back`);
+  });
+  document.querySelector(`.forward`).addEventListener(`click`, () => {
+    sendXhr(`POST`, `/control/${id}/forward`);
+  });
+  document.querySelector(`.reload`).addEventListener(`click`, () => {
+    sendXhr(`POST`, `/control/${id}/reload`);
+  });
+
   // Keep focus on video.
   videoImgElem.addEventListener(`blur`, (event) => {
     event.target.focus();
@@ -58,13 +100,16 @@ window.addEventListener(`load`, () => {
 
   // Add relevant event handlers on video.
   window.addEventListener(`mousedown`, (event) => {
-    sendMouseAction(id, event, videoImgElem, `lclick`, `down`);
+    sendMouseAction(state, id, event, videoImgElem, `lclick`, `down`);
   });
   window.addEventListener(`mouseup`, (event) => {
-    sendMouseAction(id, event, videoImgElem, `lclick`, `up`);
+    sendMouseAction(state, id, event, videoImgElem, `lclick`, `up`);
   });
   window.addEventListener(`mousemove`, (event) => {
-    sendMouseAction(id, event, videoImgElem, `move`, ``);
+    sendMouseAction(state, id, event, videoImgElem, `move`, ``);
+  });
+  window.addEventListener(`wheel`, (event) => {
+    sendMouseAction(state, id, event, videoImgElem, `wheel`, ``);
   });
   window.addEventListener(`keydown`, (event) => {
     event.preventDefault();
@@ -72,7 +117,7 @@ window.addEventListener(`load`, () => {
       "direction": `down`,
       "key": event.key,
     });
-    sendXhr(`/action/${id}/key`, null, eventJsonString);
+    sendXhr(`POST`, `/action/${id}/key`, null, eventJsonString);
   });
   window.addEventListener(`keyup`, (event) => {
     event.preventDefault();
@@ -80,6 +125,6 @@ window.addEventListener(`load`, () => {
       "direction": `up`,
       "key": event.key,
     });
-    sendXhr(`/action/${id}/key`, null, eventJsonString);
+    sendXhr(`POST`, `/action/${id}/key`, null, eventJsonString);
   });
 });

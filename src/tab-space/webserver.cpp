@@ -110,6 +110,14 @@ namespace TabSpace {
 		}
 	}
 
+	void getDefault(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+		serveStaticFile(response, request->path, SimpleWeb::StatusCode::success_ok);
+	}
+
+	void onError(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request, const SimpleWeb::error_code &ec) {
+		// Do nothing for now.
+	}
+
 	auto getNewCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = state.generateUniqueTabId();
@@ -230,6 +238,8 @@ namespace TabSpace {
 				state.tabManagers[id]->host->SendMouseClickEvent(cefMouseEvent, cef_mouse_button_type_t::MBT_LEFT, mouseUp, 1);
 			} else if (type == "move") {
 				state.tabManagers[id]->host->SendMouseMoveEvent(cefMouseEvent, false);
+			} else if (type == "wheel") {
+				state.tabManagers[id]->host->SendMouseWheelEvent(cefMouseEvent, propertyTree.get<double>("wheelDeltaX"), propertyTree.get<double>("wheelDeltaY"));
 			}
 		};
 	}
@@ -248,25 +258,54 @@ namespace TabSpace {
 				std::map<std::pair<std::string, std::string>, std::function<void(TabManager *)>> keyHandlerProxy;
 
 				// Helper functions.
-				static const auto constructBasicCefKeyEvent = [](CefKeyEvent &cefKeyEvent, CHAR character) {
-					BYTE vkCode = LOBYTE(VkKeyScan(character));
-					UINT scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
-					cefKeyEvent.native_key_code = 0x00000001 | (LPARAM) (scanCode << 16);  // Scan code, repeat=1.
-					cefKeyEvent.windows_key_code = vkCode;
+				static const auto applyCefKeyEventModifiers = [](CefKeyEvent &cefKeyEvent, TabManager *tabManager) {
+					if (tabManager->isShiftKeyDown)
+						cefKeyEvent.modifiers |= EVENTFLAG_SHIFT_DOWN;
+					if (tabManager->isControlKeyDown)
+						cefKeyEvent.modifiers |= EVENTFLAG_CONTROL_DOWN;
+					if (tabManager->isAltKeyDown)
+						cefKeyEvent.modifiers |= EVENTFLAG_ALT_DOWN;
 				};
 				static const auto constructBasicCefKeyEventWithVkCode = [](CefKeyEvent &cefKeyEvent, BYTE vkCode) {
 					UINT scanCode = MapVirtualKey(vkCode, MAPVK_VK_TO_VSC);
 					cefKeyEvent.native_key_code = 0x00000001 | (LPARAM) (scanCode << 16);  // Scan code, repeat=1.
 					cefKeyEvent.windows_key_code = vkCode;
 				};
-				static const auto constructBasicDownKeyHandler = [](char keyCharacter) {
-					return [keyCharacter](TabManager *tabManager) {
+				static const auto constructBasicCefKeyEvent = [](CefKeyEvent &cefKeyEvent, CHAR character) {
+					BYTE vkCode = LOBYTE(VkKeyScan(character));
+					constructBasicCefKeyEventWithVkCode(cefKeyEvent, vkCode);
+				};
+				static const auto constructBasicDownKeyHandlerWithKeyCode = [](char keyCharacter, int keyCode) {
+					return [keyCharacter, keyCode](TabManager *tabManager) {
 						CefKeyEvent cefKeyEvent;
 						constructBasicCefKeyEvent(cefKeyEvent, keyCharacter);
+						applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 						cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
 						tabManager->host->SendKeyEvent(cefKeyEvent);
-						cefKeyEvent.windows_key_code = keyCharacter;
+						cefKeyEvent.windows_key_code = keyCode;
 						cefKeyEvent.type = KEYEVENT_CHAR;
+						tabManager->host->SendKeyEvent(cefKeyEvent);
+					};
+				};
+				static const auto constructBasicDownKeyHandler = [](char keyCharacter) {
+					return constructBasicDownKeyHandlerWithKeyCode(keyCharacter, keyCharacter);
+				};
+				static const auto constructNoCharDownKeyHandlerWithVkCode = [](BYTE vkCode) {
+					return [vkCode](TabManager *tabManager) {
+						CefKeyEvent cefKeyEvent;
+						constructBasicCefKeyEventWithVkCode(cefKeyEvent, vkCode);
+						applyCefKeyEventModifiers(cefKeyEvent, tabManager);
+						cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
+						tabManager->host->SendKeyEvent(cefKeyEvent);
+					};
+				};
+				static const auto constructBasicUpKeyHandlerWithVkCode = [](BYTE vkCode) {
+					return [vkCode](TabManager *tabManager) {
+						CefKeyEvent cefKeyEvent;
+						constructBasicCefKeyEventWithVkCode(cefKeyEvent, vkCode);
+						applyCefKeyEventModifiers(cefKeyEvent, tabManager);
+						cefKeyEvent.native_key_code |= 0xC0000000;  // Bits 30 and 31 should be always 1 for WM_KEYUP.
+						cefKeyEvent.type = KEYEVENT_KEYUP;
 						tabManager->host->SendKeyEvent(cefKeyEvent);
 					};
 				};
@@ -274,6 +313,7 @@ namespace TabSpace {
 					return [keyCharacter](TabManager *tabManager) {
 						CefKeyEvent cefKeyEvent;
 						constructBasicCefKeyEvent(cefKeyEvent, keyCharacter);
+						applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 						cefKeyEvent.native_key_code |= 0xC0000000;  // Bits 30 and 31 should be always 1 for WM_KEYUP.
 						cefKeyEvent.type = KEYEVENT_KEYUP;
 						tabManager->host->SendKeyEvent(cefKeyEvent);
@@ -286,26 +326,48 @@ namespace TabSpace {
 					keyHandlerProxy[std::make_pair("up", std::string(1, a))] = constructBasicUpKeyHandler(a);
 				}
 
-				// Others.
+				// Capitals.
+				for (char a : "ABCDEFGHIJKLMNOPQRSTUVWXYZ") {
+					keyHandlerProxy[std::make_pair("down", std::string(1, a))] = constructBasicDownKeyHandlerWithKeyCode(tolower(a), a);
+					keyHandlerProxy[std::make_pair("up", std::string(1, a))] = constructBasicUpKeyHandler(tolower(a));
+				}
+
+				// Arrow keys.
+				keyHandlerProxy[std::make_pair("down", "ArrowUp")] = constructNoCharDownKeyHandlerWithVkCode(VK_UP);
+				keyHandlerProxy[std::make_pair("up", "ArrowUp")] = constructBasicUpKeyHandlerWithVkCode(VK_UP);
+				keyHandlerProxy[std::make_pair("down", "ArrowRight")] = constructNoCharDownKeyHandlerWithVkCode(VK_RIGHT);
+				keyHandlerProxy[std::make_pair("up", "ArrowRight")] = constructBasicUpKeyHandlerWithVkCode(VK_RIGHT);
+				keyHandlerProxy[std::make_pair("down", "ArrowDown")] = constructNoCharDownKeyHandlerWithVkCode(VK_DOWN);
+				keyHandlerProxy[std::make_pair("up", "ArrowDown")] = constructBasicUpKeyHandlerWithVkCode(VK_DOWN);
+				keyHandlerProxy[std::make_pair("down", "ArrowLeft")] = constructNoCharDownKeyHandlerWithVkCode(VK_LEFT);
+				keyHandlerProxy[std::make_pair("up", "ArrowLeft")] = constructBasicUpKeyHandlerWithVkCode(VK_LEFT);
+
+				// Spacing.
 				keyHandlerProxy[std::make_pair("down", "Enter")] = [](TabManager *tabManager) {
 					CefKeyEvent cefKeyEvent;
 					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_RETURN);
+					applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 					cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
 					tabManager->host->SendKeyEvent(cefKeyEvent);
-					cefKeyEvent.windows_key_code = '\n';
+					cefKeyEvent.windows_key_code = '\r';
 					cefKeyEvent.type = KEYEVENT_CHAR;
+					tabManager->host->SendKeyEvent(cefKeyEvent);
+					cefKeyEvent.windows_key_code = '\n';
 					tabManager->host->SendKeyEvent(cefKeyEvent);
 				};
 				keyHandlerProxy[std::make_pair("up", "Enter")] = [](TabManager *tabManager) {
 					CefKeyEvent cefKeyEvent;
 					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_RETURN);
+					applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 					cefKeyEvent.native_key_code |= 0xC0000000;
 					cefKeyEvent.type = KEYEVENT_KEYUP;
 					tabManager->host->SendKeyEvent(cefKeyEvent);
 				};
+				// TODO: Why does the key event modifiers kill Backspace?
 				keyHandlerProxy[std::make_pair("down", "Backspace")] = [](TabManager *tabManager) {
 					CefKeyEvent cefKeyEvent;
 					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_BACK);
+					// applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 					cefKeyEvent.type = KEYEVENT_RAWKEYDOWN;
 					tabManager->host->SendKeyEvent(cefKeyEvent);
 					cefKeyEvent.windows_key_code = '\b';
@@ -315,9 +377,34 @@ namespace TabSpace {
 				keyHandlerProxy[std::make_pair("up", "Backspace")] = [](TabManager *tabManager) {
 					CefKeyEvent cefKeyEvent;
 					constructBasicCefKeyEventWithVkCode(cefKeyEvent, VK_BACK);
+					// applyCefKeyEventModifiers(cefKeyEvent, tabManager);
 					cefKeyEvent.native_key_code |= 0xC0000000;
 					cefKeyEvent.type = KEYEVENT_KEYUP;
 					tabManager->host->SendKeyEvent(cefKeyEvent);
+				};
+				keyHandlerProxy[std::make_pair("down", "Tab")] = constructBasicDownKeyHandlerWithKeyCode('\t', VK_TAB);
+				keyHandlerProxy[std::make_pair("up", "Tab")] = constructBasicUpKeyHandlerWithVkCode(VK_TAB);
+				keyHandlerProxy[std::make_pair("down", "Delete")] = constructNoCharDownKeyHandlerWithVkCode(VK_DELETE);
+				keyHandlerProxy[std::make_pair("up", "Delete")] = constructBasicUpKeyHandlerWithVkCode(VK_DELETE);
+
+				// Modifiers.
+				keyHandlerProxy[std::make_pair("down", "Shift")] = [](TabManager *tabManager) {
+					tabManager->isShiftKeyDown = true;
+				};
+				keyHandlerProxy[std::make_pair("up", "Shift")] = [](TabManager *tabManager) {
+					tabManager->isShiftKeyDown = false;
+				};
+				keyHandlerProxy[std::make_pair("down", "Control")] = [](TabManager *tabManager) {
+					tabManager->isControlKeyDown = true;
+				};
+				keyHandlerProxy[std::make_pair("up", "Control")] = [](TabManager *tabManager) {
+					tabManager->isControlKeyDown = false;
+				};
+				keyHandlerProxy[std::make_pair("down", "Alt")] = [](TabManager *tabManager) {
+					tabManager->isAltKeyDown = true;
+				};
+				keyHandlerProxy[std::make_pair("up", "Alt")] = [](TabManager *tabManager) {
+					tabManager->isAltKeyDown = false;
 				};
 
 				return keyHandlerProxy;
@@ -334,7 +421,7 @@ namespace TabSpace {
 			// Construct the right parameters for CefKeyEvent.
 			auto it = keyHandlers.find(std::make_pair(direction, key));
 			if (it == keyHandlers.end()) {
-				Rain::tsCout("Can't handle this key: (", direction, ", ", key, ")!", Rain::CRLF);
+				Rain::tsCout("Failed to handle key (", direction, ", ", key, ")!", Rain::CRLF);
 				std::cout.flush();
 			} else {
 				it->second(state.tabManagers[id]);
@@ -342,12 +429,43 @@ namespace TabSpace {
 		};
 	}
 
-	void getDefault(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-		serveStaticFile(response, request->path, SimpleWeb::StatusCode::success_ok);
+	auto getControlBackCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+
+			state.tabManagers[id]->browser->GoBack();
+		};
 	}
 
-	void onError(std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request, const SimpleWeb::error_code &ec) {
-		// Do nothing for now.
+	auto getControlForwardCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+
+			state.tabManagers[id]->browser->GoForward();
+		};
+	}
+
+	auto getControlReloadCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+
+			state.tabManagers[id]->browser->Reload();
+		};
 	}
 
 	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
@@ -359,13 +477,16 @@ namespace TabSpace {
 		server.config.thread_pool_size = 1;
 
 		// Endpoints.
+		server.default_resource["GET"] = getDefault;
+		server.on_error = onError;
+
 		server.resource["^/new$"]["GET"] = getNewCurried(state);
 		server.resource["^/tab/(.+)$"]["GET"] = getTabCurried(state);
 		server.resource["^/stream/(.+)$"]["GET"] = getStreamCurried(state);
 		server.resource["^/action/(.+)/mouse$"]["POST"] = getActionMouseCurried(state);
 		server.resource["^/action/(.+)/key"]["POST"] = getActionKeyCurried(state);
-
-		server.default_resource["GET"] = getDefault;
-		server.on_error = onError;
+		server.resource["^/control/(.+)/back"]["POST"] = getControlBackCurried(state);
+		server.resource["^/control/(.+)/forward"]["POST"] = getControlForwardCurried(state);
+		server.resource["^/control/(.+)/reload"]["POST"] = getControlReloadCurried(state);
 	}
 }

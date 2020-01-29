@@ -36,7 +36,11 @@ class ClientHandler : public CefClient,
                       public CefLifeSpanHandler,
                       public CefLoadHandler,
                       public CefRequestHandler,
-                      public CefResourceRequestHandler {
+                      public CefResourceRequestHandler,
+
+                      // tab-space: Disable dialogs.
+                      public CefDialogHandler,
+                      public CefJSDialogHandler {
  public:
   // Implement this interface to receive notification of ClientHandler
   // events. The methods of this class will be called on the main thread unless
@@ -123,6 +127,32 @@ class ClientHandler : public CefClient,
     return dialog_handler_;
   }
 #endif
+  
+  // tab-space: TODO: Relay select file to client.
+  CefRefPtr<CefDialogHandler> GetDialogHandler() OVERRIDE;
+                      
+  // tab-space: TODO: Relay select file to client.
+  // CefDialogHandler methods
+  bool OnFileDialog(CefRefPtr<CefBrowser> browser,
+    FileDialogMode mode,
+    const CefString &title,
+    const CefString &default_file_path,
+    const std::vector<CefString> &accept_filters,
+    int selected_accept_filter,
+    CefRefPtr<CefFileDialogCallback> callback) OVERRIDE;
+
+  // tab-space: TODO: Relay alert to client.
+  CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() OVERRIDE;
+
+  // tab-space: TODO: Relay alert to client.
+  // CefJSDialogHandler methods
+  bool ClientHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
+    const CefString &origin_url,
+    JSDialogType dialog_type,
+    const CefString &message_text,
+    const CefString &default_prompt_text,
+    CefRefPtr<CefJSDialogCallback> callback,
+    bool &suppress_message) OVERRIDE;
 
   // CefContextMenuHandler methods
   void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,

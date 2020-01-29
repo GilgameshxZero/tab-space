@@ -74,3 +74,11 @@ Endpoint|Usage
 `/stream/(.+)`|MJPEG stream for tab \g1.
 `/action/(.+)/mouse`|Front-end mouse event for tab \g1.
 `/action/(.+)/key`|Front-end keyboard event for tab \g1.
+
+## Command Line
+
+Run it like this, or things won't work too well.
+
+```bash
+tab-space.exe --high-dpi-support=1 --force-device-scale-factor=1 --user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101 Firefox/68.0" --request-context-per-browser --disable-site-isolation-trials
+```

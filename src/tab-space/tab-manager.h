@@ -45,5 +45,10 @@ namespace TabSpace {
 		Rain::ConditionVariable nonZeroListenerCV;
 		std::mutex listenerMutex;
 		std::set<std::thread::id> listeningThreads;
+
+		// Action modifiers.
+		bool isShiftKeyDown;
+		bool isControlKeyDown;
+		bool isAltKeyDown;
 	};
 }

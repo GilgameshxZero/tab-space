@@ -306,6 +306,38 @@ bool ClientHandler::OnProcessMessageReceived(
   return false;
 }
 
+// tab-space: TODO: Relay select file to client.
+CefRefPtr<CefDialogHandler> ClientHandler::GetDialogHandler() {
+  return this;
+}
+
+// tab-space: TODO: Relay select file to client.
+bool ClientHandler::OnFileDialog(CefRefPtr<CefBrowser> browser,
+  FileDialogMode mode,
+  const CefString &title,
+  const CefString &default_file_path,
+  const std::vector<CefString> &accept_filters,
+  int selected_accept_filter,
+  CefRefPtr<CefFileDialogCallback> callback) {
+  return true;
+}
+
+// tab-space: TODO: Relay alert to client.
+CefRefPtr<CefJSDialogHandler> ClientHandler::GetJSDialogHandler() {
+  return this;
+}
+
+// tab-space: TODO: Relay alert to client.
+bool ClientHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
+  const CefString &origin_url,
+  JSDialogType dialog_type,
+  const CefString &message_text,
+  const CefString &default_prompt_text,
+  CefRefPtr<CefJSDialogCallback> callback,
+  bool &suppress_message) {
+  return true;
+}
+
 void ClientHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefRefPtr<CefContextMenuParams> params,
@@ -554,8 +586,10 @@ bool ClientHandler::OnBeforePopup(
   CEF_REQUIRE_UI_THREAD();
 
   // Return true to cancel the popup window.
-  return !CreatePopupWindow(browser, false, popupFeatures, windowInfo, client,
-                            settings);
+  // tab-space: TODO: Relay popups to client windows.
+  return true;
+  /*return !CreatePopupWindow(browser, false, popupFeatures, windowInfo, client,
+                            settings);*/
 }
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {

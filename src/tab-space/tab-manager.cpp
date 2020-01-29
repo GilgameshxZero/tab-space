@@ -15,6 +15,10 @@ namespace TabSpace {
 
 		this->rootWindow = NULL;
 		this->id = std::string();
+
+		this->isShiftKeyDown = false;
+		this->isControlKeyDown = false;
+		this->isAltKeyDown = false;
 	}
 
 	void TabManager::startCaptureThread() {

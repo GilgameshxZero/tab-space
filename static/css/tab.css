@@ -1,12 +1,63 @@
+:root {
+  --controls-height: calc(7 * var(--size));
+}
+
 body {
   display: flex;
   flex-flow: column nowrap;
 }
 
 .controls {
-  flex: 0 0 calc(7 * var(--size));
+  flex: 0 0 var(--controls-height);
+  display: flex;
+  flex-flow: row nowrap;
 
   background-image: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+}
+
+.controls>div {
+  display: flex;
+
+  width: var(--controls-height);
+}
+
+/* TODO: This element is not used. */
+.controls>div.spacer {
+  flex: 1 1 0;
+
+  min-width: calc(2 * var(--size));
+}
+
+.controls>div.url {
+  flex: 1000 1 auto;
+}
+
+.controls>div.url>input {
+  width: 100%;
+  margin: calc(1 * var(--size)) calc(1 * var(--size));
+  padding: calc(1 * var(--size)) calc(1.5 * var(--size));
+
+  border: solid black calc(0.25 * var(--size));
+  border-radius: calc(0.5 * var(--size));
+  font-size: 100%;
+  font-family: inherit;
+}
+
+.controls>div>img {
+  margin: auto;
+  width: 60%;
+
+  transition: width 0.25s;
+}
+
+/* Filters from https://codepen.io/sosuke/pen/Pjoqqp. */
+
+.controls>div:hover>img {
+  width: 50%;
+}
+
+.controls>div:active>img {
+  filter: invert(99%) sepia(60%) saturate(2%) hue-rotate(330deg) brightness(109%) contrast(101%);
 }
 
 .video-wrapper {
