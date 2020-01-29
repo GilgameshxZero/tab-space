@@ -218,24 +218,27 @@ namespace TabSpace {
 			}
 
 			// Check cookies and see if a user is logged in to keep track of that.
-			/*static const std::regex tokenRegex("token=([^;]*)");
-			std::string cookies = request->header.find("Cookie")->second;
-			std::smatch baseMatch;
+			static const std::regex tokenRegex("token=([^;]*)");
+			auto cookieIt = request->header.find("Cookie");
+			if (cookieIt != request->header.end()) {
+				std::string cookies = cookieIt->second;
+				std::smatch baseMatch;
 
-			if (std::regex_match(cookies, baseMatch, tokenRegex)) {
-				if (baseMatch.size() == 2) {
-					std::ssub_match baseSubMatch = baseMatch[1];
-					std::string base = baseSubMatch.str();
+				if (std::regex_match(cookies, baseMatch, tokenRegex)) {
+					if (baseMatch.size() == 2) {
+						std::ssub_match baseSubMatch = baseMatch[1];
+						std::string base = baseSubMatch.str();
 
-					// base contains the token.
-					state.userLoginMutex.lock();
-					auto it = state.userLoginToken.find(base);
-					if (it != state.userLoginToken.end()) {
-						state.tabManagers[id]->sharedUsernames.insert(it->second);
+						// base contains the token.
+						state.userLoginMutex.lock();
+						auto it = state.userLoginToken.find(base);
+						if (it != state.userLoginToken.end()) {
+							state.tabManagers[id]->sharedUsernames.insert(it->second);
+						}
+						state.userLoginMutex.unlock();
 					}
-					state.userLoginMutex.unlock();
 				}
-			}*/
+			}
 
 			*response << "HTTP/1.1 200" << Rain::CRLF
 				<< "Content-Type: multipart/x-mixed-replace;boundary=" << FRAME_BOUNDARY << Rain::CRLF
@@ -675,7 +678,7 @@ namespace TabSpace {
 			response->write(SimpleWeb::StatusCode::success_ok, token);
 
 			// Mark user as listening.
-			// state.tabManagers[id]->sharedUsernames.insert(username);
+			state.tabManagers[id]->sharedUsernames.insert(username);
 
 			// Save to disk.
 			state.saveUserLoginInfo();
@@ -717,7 +720,7 @@ namespace TabSpace {
 			response->write(SimpleWeb::StatusCode::success_ok, token);
 
 			// Mark user as listening.
-			// state.tabManagers[id]->sharedUsernames.insert(username);
+			state.tabManagers[id]->sharedUsernames.insert(username);
 		};
 	}
 
@@ -753,7 +756,7 @@ namespace TabSpace {
 						response->write(SimpleWeb::StatusCode::client_error_bad_request, "Token doesn't exist.");
 					} else {
 						// Unmark user as listening.
-						// state.tabManagers[id]->sharedUsernames.erase(it->second);
+						state.tabManagers[id]->sharedUsernames.erase(it->second);
 
 						state.userLoginToken.erase(it);
 						response->write(SimpleWeb::StatusCode::success_ok);
