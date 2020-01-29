@@ -186,6 +186,11 @@ window.addEventListener(`load`, () => {
       sendXhr(`POST`, `/tab/${state.id}/url`, null, event.target.value);
     }
   });
+  document.querySelector(`.plus`).addEventListener(`click`, () => {
+    sendXhr(`GET`, `/new`, (responseText) => {
+      window.open(`/tab/${responseText}`, `_blank`).focus();
+    });
+  });
 
   // Callouts.
   state.share.querySelector(`.icon-wrapper`).addEventListener(`click`, (event) => {

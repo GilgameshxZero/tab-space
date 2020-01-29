@@ -31,6 +31,6 @@ window.addEventListener(`load`, () => {
   document.querySelector(`.splash>.bottom>.large-button`).addEventListener(`click`, () => {
     requestData(`/new`, (responseText) => {
       window.location = `/tab/${responseText}`;
-    })
+    });
   });
 });
