@@ -2,6 +2,8 @@
 
 #include "../cefclient/browser/main_context_impl.h"
 
+#include "../rain-library-4/rain-libraries.h"
+
 #include "tab-manager.h"
 
 #include <thread>
@@ -33,5 +35,12 @@ namespace TabSpace {
 
 		// Function to generate a unique tab ID, at least with regards to tabManagers
 		std::string generateUniqueTabId();
+
+		// Profiles and user data.
+		std::condition_variable userLoginCv;
+		std::mutex userLoginMutex;
+		std::map<std::string, std::string> userLoginInfo;
+		std::map<std::string, std::string> userLoginTokens;
+		void saveUserLoginInfo();
 	};
 }

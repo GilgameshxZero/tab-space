@@ -62,6 +62,10 @@ ssh -p 2222 -R tab.gilgamesh.cc:80:127.0.0.1:61001 gilgamesh.cc
 
 `tab-space` uses `rain-library-4` for some basic Windows API handling. `rain-library-4` is a derivative of `rain-aeternum` used in the Emilia C++ webserver. All relevant files are included in source control already.
 
+### Javascript-MD5
+
+`tab-space` uses <https://github.com/blueimp/JavaScript-MD5> for hashing on the client-side.
+
 ## Endpoints
 
 `tab-space` reveals several endpoints for the web client.

@@ -68,7 +68,7 @@ namespace TabSpace {
 				if (this->listeningThreads.size() == 0) {
 					// Tabs expire in 60 seconds without listeners.
 					Rain::tsCout("Paused capturing for tab ", this->id, ".", Rain::CRLF);
-					if (this->nonZeroListenerCV.wait_for(lck, std::chrono::seconds(60)) == false) {
+					if (!this->nonZeroListenerCV.wait_for(lck, std::chrono::seconds(60))) {
 						Rain::tsCout("Tab ", this->id, " has expired due to inactivity.", Rain::CRLF);
 						break;
 					} else {

@@ -22,3 +22,6 @@
 **.log
 /sln/GPUCache/
 /sln/enc_temp_folder/
+
+# User data
+/db/user-login-info.json

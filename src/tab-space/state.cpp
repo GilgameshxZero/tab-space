@@ -1,4 +1,10 @@
+#include <boost/filesystem.hpp>
+#include <boost/dll.hpp>
+
 #include "state.h"
+
+#include <iostream>
+#include <fstream>
 
 namespace TabSpace {
 	std::string State::generateUniqueTabId() {
@@ -20,5 +26,21 @@ namespace TabSpace {
 
 			// Otherwise try again.
 		}
+	}
+
+	void State::saveUserLoginInfo() {
+		this->userLoginMutex.lock();
+		auto userLoginInfoPath = boost::filesystem::absolute(boost::dll::program_location().parent_path() / "../../db/user-login-info.json");
+		std::ofstream ofs(userLoginInfoPath.string(), std::ifstream::out | std::ios::binary);
+		if (ofs) {
+			ofs << this->userLoginInfo.size() << Rain::CRLF;
+			for (auto loginInfo : this->userLoginInfo) {
+				ofs << loginInfo.first << " " << loginInfo.second << Rain::CRLF;
+			}
+			ofs.close();
+			Rain::tsCout("Saved ", this->userLoginInfo.size(), " users.", Rain::CRLF);
+			std::cout.flush();
+		}
+		this->userLoginMutex.unlock();
 	}
 }
