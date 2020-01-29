@@ -468,6 +468,30 @@ namespace TabSpace {
 		};
 	}
 
+	auto getAccountCreateCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			response->write(SimpleWeb::StatusCode::success_ok);
+		};
+	}
+
+	auto getAccountLoginCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			response->write(SimpleWeb::StatusCode::success_ok);
+		};
+	}
+
+	auto getAccountLogoutCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			response->write(SimpleWeb::StatusCode::success_ok);
+		};
+	}
+
+	auto getAccountInfoCurried(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			response->write(SimpleWeb::StatusCode::success_ok);
+		};
+	}
+
 	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
 		// Default.
 		// TODO: Read from command line.
@@ -488,5 +512,9 @@ namespace TabSpace {
 		server.resource["^/control/(.+)/back"]["POST"] = getControlBackCurried(state);
 		server.resource["^/control/(.+)/forward"]["POST"] = getControlForwardCurried(state);
 		server.resource["^/control/(.+)/reload"]["POST"] = getControlReloadCurried(state);
+		server.resource["^/account/create"]["POST"] = getAccountCreateCurried(state);
+		server.resource["^/account/login"]["POST"] = getAccountLoginCurried(state);
+		server.resource["^/account/logout"]["POST"] = getAccountLogoutCurried(state);
+		server.resource["^/account/info"]["POST"] = getAccountInfoCurried(state);
 	}
 }

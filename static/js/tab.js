@@ -22,17 +22,34 @@ function sendXhr(method, url, onResponse, body) {
   xhr.send(body);
 };
 
-function sendMouseAction(state, id, event, videoImgElem, type, direction) {
+function sendMouseAction(state, event, type, direction) {
+  // If event target is an input element, send it to the input element instead of the tab.
+  if (event.target.tagName === `INPUT`)
+    return;
+
   // TODO.
   const sourceWidth = 1280;
   const sourceHeight = 720;
 
-  const videoImgElemBounds = videoImgElem.getBoundingClientRect();
+  const videoImgElemBounds = state.videoImg.getBoundingClientRect();
   const width = videoImgElemBounds.right - videoImgElemBounds.left;
   const height = videoImgElemBounds.bottom - videoImgElemBounds.top;
   let x = (event.clientX - videoImgElemBounds.left) / width;
   let y = (event.clientY - videoImgElemBounds.top) / height;
-  
+
+  let outOfBounds = false;
+
+  // If mouse L button is held down, then clamp x and y.
+  if (state.mouseLDown) {
+    x = Math.min(Math.max(x, 0), 1);
+    y = Math.min(Math.max(y, 0), 1);
+  } else {
+    // If out of bounds and not a drag event, don't send the event.
+    if (state.mouseLDown = false && (x < 0 || x > 1 || y < 0 || y > 1)) {
+      outOfBounds = true;
+    }
+  }
+
   if (type === `lclick`) {
     if (direction === `down`) {
       state.mouseLDown = true;
@@ -41,16 +58,7 @@ function sendMouseAction(state, id, event, videoImgElem, type, direction) {
     }
   }
 
-  // If mouse L button is held down, then clamp x and y.
-  if (state.mouseLDown) {
-    x = Math.min(Math.max(x, 0), 1);
-    y = Math.min(Math.max(y, 0), 1);
-  } else {
-    // If out of bounds, don't send the event.
-    if (x < 0 || x > 1 || y < 0 || y > 1) {
-      return;
-    }
-  }
+  if (outOfBounds) return;
 
   x = x * sourceWidth - 0.01;
   y = y * sourceHeight - 0.01;
@@ -63,7 +71,20 @@ function sendMouseAction(state, id, event, videoImgElem, type, direction) {
     "wheelDeltaX": -event.deltaX * state.WHEEL_EVENT_MULTIPLIER,
     "wheelDeltaY": -event.deltaY * state.WHEEL_EVENT_MULTIPLIER,
   });
-  sendXhr(`POST`, `/action/${id}/mouse`, null, eventJsonString);
+  sendXhr(`POST`, `/action/${state.id}/mouse`, null, eventJsonString);
+}
+
+function handleKeyAction(state, event, direction) {
+  // If event target is an input element, send it to the input element instead of the tab.
+  if (event.target.tagName === `INPUT`)
+    return;
+
+  event.preventDefault();
+  const eventJsonString = JSON.stringify({
+    "direction": direction,
+    "key": event.key,
+  });
+  sendXhr(`POST`, `/action/${state.id}/key`, null, eventJsonString);
 }
 
 window.addEventListener(`load`, () => {
@@ -73,58 +94,97 @@ window.addEventListener(`load`, () => {
     WHEEL_EVENT_MULTIPLIER: 25,
 
     mouseLDown: false,
+    id: ``,
+
+    share: document.querySelector(`.share`),
+    resolution: document.querySelector(`.resolution`),
+    resolutionWidth: document.querySelector(`.resolution .width`),
+    resolutionHeight: document.querySelector(`.resolution .height`),
+    profile: document.querySelector(`.profile`),
+
+    videoImg: document.querySelector(`.video`),
   };
 
   // Get the tab ID from the URL.
   const idSplit = window.location.href.split(`/`);
-  const id = idSplit[idSplit.length - 1].split(`?`)[0];
+  state.id = idSplit[idSplit.length - 1].split(`?`)[0];
 
-  const videoImgElem = document.querySelector(`.video`);
-  videoImgElem.src = `/stream/${id}`;
+  state.videoImg.src = `/stream/${state.id}`;
+
+  // Keep focus on video.
+  state.videoImg.addEventListener(`blur`, (event) => {
+    event.target.focus();
+  });
+
+  const shareLink = state.share.querySelector(`.callout>input.link`);
+  shareLink.value = window.location;
+  shareLink.addEventListener(`click`, (event) => {
+    event.stopPropagation();
+    shareLink.select();
+    shareLink.setSelectionRange(0, 10000); // For mobile devices.
+    document.execCommand(`copy`);
+  });
+  state.share.querySelector(`.callout>.share-only`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  state.share.querySelector(`.callout>input.usernames`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+
+  const videoImgElemBounds = state.videoImg.getBoundingClientRect();
+  state.resolutionWidth.value = videoImgElemBounds.right - videoImgElemBounds.left;
+  state.resolutionHeight.value = videoImgElemBounds.bottom - videoImgElemBounds.top;
+  state.resolution.querySelector(`.callout>.clone`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+
+    const videoImgElemBounds = state.videoImg.getBoundingClientRect();
+    state.resolutionWidth.value = videoImgElemBounds.right - videoImgElemBounds.left;
+    state.resolutionHeight.value = videoImgElemBounds.bottom - videoImgElemBounds.top;
+  });
 
   // Controls panel.
   document.querySelector(`.back`).addEventListener(`click`, () => {
-    sendXhr(`POST`, `/control/${id}/back`);
+    sendXhr(`POST`, `/control/${state.id}/back`);
   });
   document.querySelector(`.forward`).addEventListener(`click`, () => {
-    sendXhr(`POST`, `/control/${id}/forward`);
+    sendXhr(`POST`, `/control/${state.id}/forward`);
   });
   document.querySelector(`.reload`).addEventListener(`click`, () => {
-    sendXhr(`POST`, `/control/${id}/reload`);
+    sendXhr(`POST`, `/control/${state.id}/reload`);
   });
-
-  // Keep focus on video.
-  videoImgElem.addEventListener(`blur`, (event) => {
-    event.target.focus();
+  state.share.addEventListener(`click`, (event) => {
+    state.share.classList.toggle(`opened`);
+    state.resolution.classList.remove(`opened`);
+    state.profile.classList.remove(`opened`);
+  });
+  state.resolution.addEventListener(`click`, () => {
+    state.share.classList.remove(`opened`);
+    state.resolution.classList.toggle(`opened`);
+    state.profile.classList.remove(`opened`);
+  });
+  state.profile.addEventListener(`click`, () => {
+    state.share.classList.remove(`opened`);
+    state.resolution.classList.remove(`opened`);
+    state.profile.classList.toggle(`opened`);
   });
 
   // Add relevant event handlers on video.
   window.addEventListener(`mousedown`, (event) => {
-    sendMouseAction(state, id, event, videoImgElem, `lclick`, `down`);
+    sendMouseAction(state, event, `lclick`, `down`);
   });
   window.addEventListener(`mouseup`, (event) => {
-    sendMouseAction(state, id, event, videoImgElem, `lclick`, `up`);
+    sendMouseAction(state, event, `lclick`, `up`);
   });
   window.addEventListener(`mousemove`, (event) => {
-    sendMouseAction(state, id, event, videoImgElem, `move`, ``);
+    sendMouseAction(state, event, `move`, ``);
   });
   window.addEventListener(`wheel`, (event) => {
-    sendMouseAction(state, id, event, videoImgElem, `wheel`, ``);
+    sendMouseAction(state, event, `wheel`, ``);
   });
   window.addEventListener(`keydown`, (event) => {
-    event.preventDefault();
-    const eventJsonString = JSON.stringify({
-      "direction": `down`,
-      "key": event.key,
-    });
-    sendXhr(`POST`, `/action/${id}/key`, null, eventJsonString);
+    handleKeyAction(state, event, `down`);
   });
   window.addEventListener(`keyup`, (event) => {
-    event.preventDefault();
-    const eventJsonString = JSON.stringify({
-      "direction": `up`,
-      "key": event.key,
-    });
-    sendXhr(`POST`, `/action/${id}/key`, null, eventJsonString);
+    handleKeyAction(state, event, `up`);
   });
 });

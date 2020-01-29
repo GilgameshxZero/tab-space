@@ -7,6 +7,22 @@ body {
   flex-flow: column nowrap;
 }
 
+input[type=text] {
+  padding: calc(1 * var(--size)) calc(1.5 * var(--size));
+  min-width: 0;
+
+  border: solid black calc(0.25 * var(--size));
+  border-radius: calc(0.5 * var(--size));
+  font-size: 100%;
+  font-family: inherit;
+
+  pointer-events: initial;
+}
+
+input[type=checkbox] {
+  pointer-events: initial;
+}
+
 .controls {
   flex: 0 0 var(--controls-height);
   display: flex;
@@ -17,8 +33,11 @@ body {
 
 .controls>div {
   display: flex;
+  position: relative;
 
   width: var(--controls-height);
+
+  cursor: pointer;
 }
 
 /* TODO: This element is not used. */
@@ -26,21 +45,19 @@ body {
   flex: 1 1 0;
 
   min-width: calc(2 * var(--size));
+
+  cursor: initial;
 }
 
 .controls>div.url {
   flex: 1000 1 auto;
+
+  cursor: initial;
 }
 
 .controls>div.url>input {
   width: 100%;
   margin: calc(1 * var(--size)) calc(1 * var(--size));
-  padding: calc(1 * var(--size)) calc(1.5 * var(--size));
-
-  border: solid black calc(0.25 * var(--size));
-  border-radius: calc(0.5 * var(--size));
-  font-size: 100%;
-  font-family: inherit;
 }
 
 .controls>div>img {
@@ -58,6 +75,141 @@ body {
 
 .controls>div:active>img {
   filter: invert(99%) sepia(60%) saturate(2%) hue-rotate(330deg) brightness(109%) contrast(101%);
+}
+
+/* Controls callouts. */
+.controls>div>.callout {
+  display: none !important;
+}
+
+.controls>div.opened>.callout {
+  display: flex !important;
+  flex-flow: column nowrap;
+  z-index: 1000;
+  position: absolute;
+  right: calc(1 * var(--size));
+
+  margin-top: 90%;
+  padding: calc(2 * var(--size));
+  width: calc(35 * var(--size));
+
+  background-color: white;
+  background-image: linear-gradient(to right, var(--gradient-start-light) 0%, var(--gradient-end-light) 100%);
+  background-position: 0 0;
+  background-size: 100%;
+
+  border: solid black calc(0.25 * var(--size));
+  border-radius: calc(0.5 * var(--size));
+  -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.75);
+
+  pointer-events: none;
+}
+
+.controls>.share>.callout>.motto {
+  margin-bottom: calc(1 * var(--size));
+
+  text-align: center;
+}
+
+.controls>.share>.callout>input.link {
+  cursor: pointer;
+}
+
+.controls>.share>.callout>.share-only {
+  margin: calc(2 * var(--size)) auto calc(1 * var(--size));
+
+  pointer-events: initial;
+}
+
+.controls>.resolution>.callout>.clone {
+  margin: auto auto calc(2 * var(--size));
+  padding: calc(0.75 * var(--size)) calc(1 * var(--size));
+
+  text-align: center;
+
+  border: calc(0.25 * var(--size)) solid black;
+  border-radius: calc(0.75 * var(--size));
+  background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 50%, var(--gradient-start) 100%);
+  background-position: 0 0;
+  background-size: 200%;
+
+  transition: background var(--transition-time);
+
+  cursor: pointer;
+  pointer-events: initial;
+}
+
+.controls>.resolution>.callout>.clone:hover {
+  background-position: 100% 0;
+}
+
+.controls>.resolution>.callout>.input {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.controls>.resolution>.callout>.input>input {
+  flex: 1 1 0;
+}
+
+.controls>.resolution>.callout>.input>img {
+  flex: 0 0 calc(3 * var(--size));
+  width: calc(3 * var(--size));
+  height: calc(3 * var(--size));
+
+  margin: auto calc(1 * var(--size));
+}
+
+.controls>.profile>.callout>.logged-out {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.controls>.profile>.callout>.logged-out>.username {
+  margin: 0 0 calc(1 * var(--size));
+}
+
+.controls>.profile>.callout>.logged-out>.password {
+  margin: 0 0 calc(2 * var(--size));
+}
+
+.controls>.profile>.callout>.logged-out>.actions {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.controls>.profile>.callout>.logged-out>.actions>.button {
+  flex: 1 0 0;
+  margin: 0;
+  padding: calc(0.75 * var(--size)) calc(1 * var(--size));
+
+  text-align: center;
+
+  border: calc(0.25 * var(--size)) solid black;
+  border-radius: calc(0.75 * var(--size));
+  background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 50%, var(--gradient-start) 100%);
+  background-position: 0 0;
+  background-size: 200%;
+
+  transition: background var(--transition-time);
+
+  cursor: pointer;
+  pointer-events: initial;
+}
+
+.controls>.profile>.callout>.logged-out>.actions>.button:hover {
+  background-position: 100%;
+}
+
+.controls>.profile>.callout>.logged-out>.actions>.spacer {
+  flex: 0 0 calc(2 * var(--size));
+}
+
+.controls>.profile>.callout>.logged-out>.status {
+  padding-top: calc(2 * var(--size));
+  text-align: center;
 }
 
 .video-wrapper {

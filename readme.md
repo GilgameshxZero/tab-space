@@ -75,6 +75,8 @@ Endpoint|Usage
 `/action/(.+)/mouse`|Front-end mouse event for tab \g1.
 `/action/(.+)/key`|Front-end keyboard event for tab \g1.
 
+This is not up to date.
+
 ## Command Line
 
 Run it like this, or things won't work too well.

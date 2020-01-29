@@ -75,10 +75,10 @@ body {
   background-size: 200%;
   
   transition: background var(--transition-time);
+
+  cursor: pointer;
 }
 
 .splash>.bottom>.button:hover {
   background-position: 100% 0;
-
-  cursor: pointer;
 }
