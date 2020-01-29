@@ -145,6 +145,28 @@ input[type=checkbox] {
   background-position: 100% 0;
 }
 
+.controls>.resolution>.callout>.set {
+  margin: calc(2 * var(--size)) auto 0;
+  padding: calc(0.75 * var(--size)) calc(1 * var(--size));
+
+  text-align: center;
+
+  border: calc(0.25 * var(--size)) solid black;
+  border-radius: calc(0.75 * var(--size));
+  background-image: linear-gradient(to right, var(--gradient-start) 0%, var(--gradient-end) 50%, var(--gradient-start) 100%);
+  background-position: 0 0;
+  background-size: 200%;
+
+  transition: background var(--transition-time);
+
+  cursor: pointer;
+  pointer-events: initial;
+}
+
+.controls>.resolution>.callout>.set:hover {
+  background-position: 100% 0;
+}
+
 .controls>.resolution>.callout>.input {
   display: flex;
   flex-flow: row nowrap;
@@ -152,6 +174,8 @@ input[type=checkbox] {
 
 .controls>.resolution>.callout>.input>input {
   flex: 1 1 0;
+
+  text-align: center;
 }
 
 .controls>.resolution>.callout>.input>img {

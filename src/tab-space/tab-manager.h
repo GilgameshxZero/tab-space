@@ -50,5 +50,13 @@ namespace TabSpace {
 		bool isShiftKeyDown;
 		bool isControlKeyDown;
 		bool isAltKeyDown;
+
+		// Sharing status.
+		bool shareOnly;  // If true, then tab can only be loaded by specified usernames.
+		std::set<std::string> shareOnlyUsernames;
+
+		// Resolution control.
+		std::mutex resolutionMutex;
+		void setResolution(int width, int height);
 	};
 }

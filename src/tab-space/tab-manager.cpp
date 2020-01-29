@@ -40,7 +40,7 @@ namespace TabSpace {
 		this->hDc = GetDC(this->hWnd);
 		this->hDest = CreateCompatibleDC(this->hDc);
 		this->hBmp = CreateCompatibleBitmap(this->hDc, this->width, this->height);
-		SelectObject(this->hDest, this->hBmp);
+		HGDIOBJ prevBmp = SelectObject(this->hDest, this->hBmp);
 
 		std::thread([&]() {
 			Rain::tsCout("Launched tab ", id, " on thread ", std::this_thread::get_id(), ".", Rain::CRLF);
@@ -78,10 +78,13 @@ namespace TabSpace {
 				}
 
 				// 0x00000002 allows us to capture GPU renders.
+				this->resolutionMutex.lock();
 				PrintWindow(this->hWnd, this->hDest, 0x00000002);
 
 				// Save the JPEG data.
 				Gdiplus::Bitmap bmp(this->hBmp, (HPALETTE) 0);
+				this->resolutionMutex.unlock();
+
 				CreateStreamOnHGlobal(NULL, TRUE, &iStream);
 				bmp.Save(iStream, &TabManager::jpegClsid, &encoderParameters);
 				GetHGlobalFromStream(iStream, &hg);
@@ -97,6 +100,7 @@ namespace TabSpace {
 				std::this_thread::sleep_for(std::chrono::milliseconds(17));
 			}
 
+			SelectObject(this->hDest, prevBmp);
 			ReleaseDC(NULL, this->hDc);
 			DeleteObject(this->hBmp);
 			DeleteDC(this->hDest);
@@ -105,5 +109,26 @@ namespace TabSpace {
 			this->rootWindow->Close(false);
 			TabManager::handleStateOnDestruct(this);
 		}).detach();
+	}
+
+	void TabManager::setResolution(int width, int height) {
+		this->resolutionMutex.lock();
+
+		this->width = width;
+		this->height = height;
+		HBITMAP newBmp = CreateCompatibleBitmap(this->hDc, this->width, this->height);
+		SelectObject(this->hDest, newBmp);
+		DeleteObject(this->hBmp);
+		this->hBmp = newBmp;
+
+		// A bit larger for good measure.
+		this->rootWindow->SetBounds(0, 0, this->width + 100, this->height + 100);
+
+		// Update browser.
+		SetWindowPos(this->hWnd, NULL, 0, 0,
+			this->width, this->height,
+			SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+		this->resolutionMutex.unlock();
 	}
 }

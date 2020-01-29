@@ -27,10 +27,6 @@ function sendMouseAction(state, event, type, direction) {
   if (event.target.tagName === `INPUT`)
     return;
 
-  // TODO.
-  const sourceWidth = 1280;
-  const sourceHeight = 720;
-
   const videoImgElemBounds = state.videoImg.getBoundingClientRect();
   const width = videoImgElemBounds.right - videoImgElemBounds.left;
   const height = videoImgElemBounds.bottom - videoImgElemBounds.top;
@@ -60,8 +56,8 @@ function sendMouseAction(state, event, type, direction) {
 
   if (outOfBounds) return;
 
-  x = x * sourceWidth - 0.01;
-  y = y * sourceHeight - 0.01;
+  x = x * state.sourceWidth - 0.01;
+  y = y * state.sourceHeight - 0.01;
 
   const eventJsonString = JSON.stringify({
     "type": type,
@@ -90,8 +86,12 @@ function handleKeyAction(state, event, direction) {
 window.addEventListener(`load`, () => {
   testApplyMobileStyling();
 
+  // Global state for client.
   const state = {
     WHEEL_EVENT_MULTIPLIER: 25,
+
+    sourceWidth: 1280,
+    sourceHeight: 720,
 
     mouseLDown: false,
     id: ``,
@@ -103,6 +103,8 @@ window.addEventListener(`load`, () => {
     profile: document.querySelector(`.profile`),
 
     videoImg: document.querySelector(`.video`),
+
+    lastFetchedUrl: ``,
   };
 
   // Get the tab ID from the URL.
@@ -111,38 +113,19 @@ window.addEventListener(`load`, () => {
 
   state.videoImg.src = `/stream/${state.id}`;
 
-  // Keep focus on video.
-  state.videoImg.addEventListener(`blur`, (event) => {
-    event.target.focus();
-  });
+  // TODO: Use Websocket. Periodically pull URL from backend.
+  const pullUrl = () => {
+    sendXhr(`GET`, `/tab/${state.id}/url`, (responseText) => {
+      if (responseText !== state.lastFetchedUrl) {
+        state.lastFetchedUrl = responseText;
+        document.querySelector(`.controls>.url>input`).value = responseText;
+      }
+      setTimeout(pullUrl, 500);
+    });
+  };
+  pullUrl();
 
-  const shareLink = state.share.querySelector(`.callout>input.link`);
-  shareLink.value = window.location;
-  shareLink.addEventListener(`click`, (event) => {
-    event.stopPropagation();
-    shareLink.select();
-    shareLink.setSelectionRange(0, 10000); // For mobile devices.
-    document.execCommand(`copy`);
-  });
-  state.share.querySelector(`.callout>.share-only`).addEventListener(`click`, (event) => {
-    event.stopPropagation();
-  });
-  state.share.querySelector(`.callout>input.usernames`).addEventListener(`click`, (event) => {
-    event.stopPropagation();
-  });
-
-  const videoImgElemBounds = state.videoImg.getBoundingClientRect();
-  state.resolutionWidth.value = videoImgElemBounds.right - videoImgElemBounds.left;
-  state.resolutionHeight.value = videoImgElemBounds.bottom - videoImgElemBounds.top;
-  state.resolution.querySelector(`.callout>.clone`).addEventListener(`click`, (event) => {
-    event.stopPropagation();
-
-    const videoImgElemBounds = state.videoImg.getBoundingClientRect();
-    state.resolutionWidth.value = videoImgElemBounds.right - videoImgElemBounds.left;
-    state.resolutionHeight.value = videoImgElemBounds.bottom - videoImgElemBounds.top;
-  });
-
-  // Controls panel.
+  // Controls panel left and URL.
   document.querySelector(`.back`).addEventListener(`click`, () => {
     sendXhr(`POST`, `/control/${state.id}/back`);
   });
@@ -152,6 +135,13 @@ window.addEventListener(`load`, () => {
   document.querySelector(`.reload`).addEventListener(`click`, () => {
     sendXhr(`POST`, `/control/${state.id}/reload`);
   });
+  document.querySelector(`.url>input`).addEventListener(`keyup`, (event) => {
+    if (event.keyCode == 13) {
+      sendXhr(`POST`, `/tab/${state.id}/url`, null, event.target.value);
+    }
+  });
+
+  // Callouts.
   state.share.addEventListener(`click`, (event) => {
     state.share.classList.toggle(`opened`);
     state.resolution.classList.remove(`opened`);
@@ -167,6 +157,83 @@ window.addEventListener(`load`, () => {
     state.resolution.classList.remove(`opened`);
     state.profile.classList.toggle(`opened`);
   });
+
+  // Share controls.
+  const shareLink = state.share.querySelector(`.callout>input.link`);
+  shareLink.value = window.location;
+  shareLink.addEventListener(`click`, (event) => {
+    event.stopPropagation();
+    shareLink.select();
+    shareLink.setSelectionRange(0, 10000); // For mobile devices.
+    document.execCommand(`copy`);
+  });
+  const shareOnly = state.share.querySelector(`.callout>.share-only`);
+  sendXhr(`GET`, `/control/${state.id}/share/only`, (responseText) => {
+    console.log(responseText === `true`);
+    shareOnly.querySelector(`input`).checked = responseText === `true`;
+  });
+  shareOnly.addEventListener(`click`, (event) => {
+    event.stopPropagation();
+    sendXhr(`POST`, `/control/${state.id}/share/only`, null, event.target.checked ? `true` : `false`);
+  });
+  const shareOnlyUsernames = state.share.querySelector(`.callout>input.usernames`);
+  sendXhr(`GET`, `/control/${state.id}/share/only/usernames`, (responseText) => {
+    shareOnlyUsernames.value = responseText;
+  });
+  shareOnlyUsernames.addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  shareOnlyUsernames.addEventListener(`blur`, (event) => {
+    event.stopPropagation();
+    sendXhr(`POST`, `/control/${state.id}/share/only/usernames`, null, JSON.stringify({
+      "usernames": shareOnlyUsernames.value.split(` `).filter((x) => x != ``),
+    }));
+  });
+
+  // Resolution controls.
+  const cloneMyResolution = () => {
+    const videoImgElemBounds = document.querySelector(`.video-wrapper`).getBoundingClientRect();
+    state.resolutionWidth.value = parseInt(videoImgElemBounds.right - videoImgElemBounds.left);
+    state.resolutionHeight.value = parseInt(videoImgElemBounds.bottom - videoImgElemBounds.top);
+  };
+  const updateBackendResolution = () => {
+    state.sourceWidth = state.resolutionWidth.value;
+    state.sourceHeight = state.resolutionHeight.value;
+    sendXhr(`POST`, `/control/${state.id}/resolution`, null, JSON.stringify({
+      "width": state.sourceWidth,
+      "height": state.sourceHeight,
+    }));
+  };
+  const getBackendResolution = () => {
+    sendXhr(`GET`, `/control/${state.id}/resolution`, (responseText) => {
+      const dimensions = responseText.split(` `);
+      state.resolutionWidth.value = parseInt(dimensions[0]);
+      state.resolutionHeight.value = parseInt(dimensions[1]);
+    });
+  };
+  // Maximize resolution if first listener.
+  sendXhr(`GET`, `/stream/${state.id}/count`, (responseText) => {
+    if (parseInt(responseText) == 1) {
+      cloneMyResolution();
+      updateBackendResolution();
+    } else {
+      getBackendResolution();
+    }
+  });
+  state.resolution.querySelector(`.callout .clone`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+    cloneMyResolution();
+  });
+  state.resolution.querySelectorAll(`.callout input`).forEach((node) => node.addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  }));
+  state.resolution.querySelector(`.callout .set`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+    updateBackendResolution();
+  });
+
+  // Profile controls.
+  // TODO.
 
   // Add relevant event handlers on video.
   window.addEventListener(`mousedown`, (event) => {
