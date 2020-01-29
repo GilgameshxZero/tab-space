@@ -13,6 +13,7 @@
   <link rel="stylesheet" type="text/css" href="/css/mobile.css">
   <link rel="stylesheet" type="text/css" href="/css/index.css">
   <link rel="stylesheet" type="text/css" href="/css/tab.css">
+  <script type="text/javascript" src="/js/md5.min.js"></script>
   <script type="text/javascript" src="/js/tab.js"></script>
 </head>
 
@@ -20,20 +21,28 @@
   <div class="splash">
     <div class="controls">
       <div class="back">
-        <img class="no-select" src="/img/back.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/back.png" />
+        </div>
       </div>
       <div class="forward">
-        <img class="no-select" src="/img/forward.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/forward.png" />
+        </div>
       </div>
       <div class="reload">
-        <img class="no-select" src="/img/reload.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/reload.png" />
+        </div>
       </div>
       <div class="url">
         <input type="text" />
       </div>
       <div class="spacer"></div>
       <div class="share">
-        <img class="no-select" src="/img/share.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/share.png" />
+        </div>
         <div class="callout">
           <div class="motto">Share this tab with friends!</div>
           <input class="link" type="text" readonly />
@@ -42,26 +51,24 @@
         </div>
       </div>
       <div class="resolution">
-        <img class="no-select" src="/img/resolution.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/resolution.png" />
+        </div>
         <div class="callout">
-          <div class="clone no-select">Clone my resolution</div>
+          <div class="button clone no-select">Clone my resolution</div>
           <div class="input">
             <input class="width" type="text" />
             <img src="/img/cross.png" />
             <input class="height" type="text" />
           </div>
-          <div class="set no-select">Set resolution</div>
+          <div class="button set no-select">Set resolution</div>
         </div>
       </div>
       <div class="profile">
-        <img class="no-select" src="/img/profile.png" />
+        <div class="icon-wrapper">
+          <img class="no-select" src="/img/profile.png" />
+        </div>
         <div class="callout">
-          <div class="logged-in no-display">
-            <div class="welcome">
-              Welcome, <div class="username"></div>
-            </div>
-            <div class="logout"></div>
-          </div>
           <div class="logged-out">
             <input class="username" type="text" placeholder="Username" />
             <input class="password" type="text" placeholder="Password" />
@@ -71,6 +78,12 @@
               <div class="button create no-select">Sign up</div>
             </div>
             <div class="status no-select"></div>
+          </div>
+          <div class="logged-in no-display">
+            <div class="welcome">
+              Welcome, <div class="username"></div>
+            </div>
+            <div class="logout"></div>
           </div>
         </div>
       </div>

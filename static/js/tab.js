@@ -26,6 +26,8 @@ function sendMouseAction(state, event, type, direction) {
   // If event target is an input element, send it to the input element instead of the tab.
   if (event.target.tagName === `INPUT`)
     return;
+  if (event.target.classList.contains(`button`) || event.target.classList.contains(`callout`))
+    return;
 
   const videoImgElemBounds = state.videoImg.getBoundingClientRect();
   const width = videoImgElemBounds.right - videoImgElemBounds.left;
@@ -71,8 +73,10 @@ function sendMouseAction(state, event, type, direction) {
 }
 
 function handleKeyAction(state, event, direction) {
-  // If event target is an input element, send it to the input element instead of the tab.
+  // If event target is an input element or button, send it to the input element instead of the tab.
   if (event.target.tagName === `INPUT`)
+    return;
+  if (event.target.classList.contains(`button`) || event.target.classList.contains(`callout`))
     return;
 
   event.preventDefault();
@@ -142,17 +146,17 @@ window.addEventListener(`load`, () => {
   });
 
   // Callouts.
-  state.share.addEventListener(`click`, (event) => {
+  state.share.querySelector(`.icon-wrapper`).addEventListener(`click`, (event) => {
     state.share.classList.toggle(`opened`);
     state.resolution.classList.remove(`opened`);
     state.profile.classList.remove(`opened`);
   });
-  state.resolution.addEventListener(`click`, () => {
+  state.resolution.querySelector(`.icon-wrapper`).addEventListener(`click`, () => {
     state.share.classList.remove(`opened`);
     state.resolution.classList.toggle(`opened`);
     state.profile.classList.remove(`opened`);
   });
-  state.profile.addEventListener(`click`, () => {
+  state.profile.querySelector(`.icon-wrapper`).addEventListener(`click`, () => {
     state.share.classList.remove(`opened`);
     state.resolution.classList.remove(`opened`);
     state.profile.classList.toggle(`opened`);
@@ -233,7 +237,26 @@ window.addEventListener(`load`, () => {
   });
 
   // Profile controls.
-  // TODO.
+  const saltHashPassword = (password) => {
+    return md5(`${password}emt!`);
+  };
+  state.profile.querySelector(`.callout input.username`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  state.profile.querySelector(`.callout input.password`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  state.profile.querySelector(`.callout .login`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  state.profile.querySelector(`.callout .create`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+  state.profile.querySelector(`.callout .logout`).addEventListener(`click`, (event) => {
+    event.stopPropagation();
+  });
+
+  // Use cookie to see if we're already logged in, and enable flags accordingly.
 
   // Add relevant event handlers on video.
   window.addEventListener(`mousedown`, (event) => {

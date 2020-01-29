@@ -58,5 +58,9 @@ namespace TabSpace {
 		// Resolution control.
 		std::mutex resolutionMutex;
 		void setResolution(int width, int height);
+
+		// Profiles and user data.
+		std::map<std::string, std::string> userLoginInfo;
+		std::map<std::string, std::string> userAuthTokens;
 	};
 }

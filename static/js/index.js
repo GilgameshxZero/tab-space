@@ -28,7 +28,7 @@ window.addEventListener(`load`, () => {
   });
   document.querySelector(`.splash`).classList.remove(`loading`);
   
-  document.querySelector(`.splash>.bottom>.button`).addEventListener(`click`, () => {
+  document.querySelector(`.splash>.bottom>.large-button`).addEventListener(`click`, () => {
     requestData(`/new`, (responseText) => {
       window.location = `/tab/${responseText}`;
     })

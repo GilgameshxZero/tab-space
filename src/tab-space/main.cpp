@@ -33,6 +33,10 @@ namespace TabSpace {
 		// Random seed for tab IDs.
 		state.rng.seed(std::chrono::system_clock::now().time_since_epoch().count());
 
+		// Load user login information.
+
+		// Start a thread to periodically save the user login information.
+
 		SimpleWeb::Server<SimpleWeb::HTTP> httpServer;
 		initHttpServer(httpServer, state);
 		Rain::tsCout("Webserver starting on thread ", std::this_thread::get_id(), "...", Rain::CRLF);

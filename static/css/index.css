@@ -61,7 +61,7 @@ body {
   font-size: 150%;
 }
 
-.splash>.bottom>.button {
+.splash>.bottom>.large-button {
   margin: auto;
   padding: calc(1.5 * var(--size)) calc(2 * var(--size));
 
@@ -79,6 +79,6 @@ body {
   cursor: pointer;
 }
 
-.splash>.bottom>.button:hover {
+.splash>.bottom>.large-button:hover {
   background-position: 100% 0;
 }
