@@ -39,7 +39,7 @@ namespace TabSpace {
 		void startCaptureThread();
 
 		// Most recent JPEG capture of the window.
-		std::mutex dataMutex;
+		// std::mutex dataMutex;
 		std::vector<char> jpegData;
 
 		// All threads which are reading from the JPEG capture.

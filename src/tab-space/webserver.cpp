@@ -261,13 +261,18 @@ namespace TabSpace {
 				bool active = true;
 
 				while (active) {
-					tabManager->dataMutex.lock();
+					// tabManager->dataMutex.lock();
+					if (tabManager->jpegData.size() == 0) {
+						// tabManager->dataMutex.unlock();
+						std::this_thread::sleep_for(std::chrono::milliseconds(50));
+						continue;
+					}
 					*response << "--" << FRAME_BOUNDARY << Rain::CRLF
 						<< "Content-Type: image/jpeg" << Rain::CRLF
 						<< "Content-Length: " << Rain::tToStr(tabManager->jpegData.size()) << Rain::CRLF
 						<< Rain::CRLF;
 					response->write(&tabManager->jpegData[0], tabManager->jpegData.size());
-					tabManager->dataMutex.unlock();
+					// tabManager->dataMutex.unlock();
 					*response << Rain::CRLF << Rain::CRLF;
 					response->send([&](const SimpleWeb::error_code &ec) {
 						if (ec) {
@@ -317,7 +322,7 @@ namespace TabSpace {
 				description += username + ", ";
 			}
 
-			int otherUsers = state.tabManagers[id]->listeningThreads.size() - state.tabManagers[id]->sharedUsernames.size();
+			std::size_t otherUsers = state.tabManagers[id]->listeningThreads.size() - state.tabManagers[id]->sharedUsernames.size();
 			if (otherUsers == 0) {
 				description.pop_back();
 				description.pop_back();

@@ -96,10 +96,10 @@ namespace TabSpace {
 				// Copy IStream to buffer.
 				int bufsize = GlobalSize(hg);
 				LPVOID pImage = GlobalLock(hg);
-				this->dataMutex.lock();
+				// this->dataMutex.lock();
 				this->jpegData.resize(bufsize);
 				memcpy(&this->jpegData[0], pImage, bufsize);
-				this->dataMutex.unlock();
+				// this->dataMutex.unlock();
 				GlobalUnlock(hg);
 				iStream->Release();
 
