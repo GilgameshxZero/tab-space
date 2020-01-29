@@ -43,4 +43,21 @@ namespace TabSpace {
 		}
 		this->userLoginMutex.unlock();
 	}
+
+	std::string State::generateLoginToken() {
+		static const int TOKEN_LEN = 25;
+		static const std::string alphabet =
+			"0123456789"
+			"abcdefghijklmnopqrstuvwxyz";
+
+		while (true) {
+			std::string token;
+			for (int a = 0; a < TOKEN_LEN; a++) {
+				token += alphabet[this->rng() % alphabet.length()];
+			}
+			if (this->userLoginToken.find(token) == this->userLoginToken.end()) {
+				return token;
+			}
+		}
+	}
 }

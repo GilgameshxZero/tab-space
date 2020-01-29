@@ -7,7 +7,7 @@ body {
   flex-flow: column nowrap;
 }
 
-input[type=text] {
+input[type=text], input[type=password] {
   padding: calc(1 * var(--size)) calc(1.5 * var(--size));
   min-width: 0;
 
@@ -183,6 +183,10 @@ input[type=checkbox] {
   flex-flow: column nowrap;
 }
 
+.controls>.profile>.callout.authenticated>.logged-out {
+  display: none;
+}
+
 .controls>.profile>.callout>.logged-out>.username {
   margin: 0 0 calc(1 * var(--size));
 }
@@ -205,7 +209,26 @@ input[type=checkbox] {
   flex: 0 0 calc(2 * var(--size));
 }
 
-.controls>.profile>.callout>.logged-out>.status {
+.controls>.profile>.callout>.logged-in {
+  display: none;
+}
+
+.controls>.profile>.callout.authenticated>.logged-in {
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+.controls>.profile>.callout>.logged-in>.welcome {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.controls>.profile>.callout>.logged-in>.logout {
+  margin: calc(2 * var(--size)) auto 0;
+}
+
+.controls>.profile>.callout>.status {
   padding-top: calc(2 * var(--size));
   text-align: center;
 }

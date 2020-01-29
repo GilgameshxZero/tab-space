@@ -61,7 +61,8 @@ namespace TabSpace {
 			std::cv_status waitResult = std::cv_status::timeout;
 			while (waitResult == std::cv_status::timeout) {
 				// Returns false if timeout, true if terminated.
-				waitResult = state->userLoginCv.wait_for(lck, std::chrono::seconds(5));
+				// TODO: Make this wakeup on CTRL+C
+				waitResult = state->userLoginCv.wait_for(lck, std::chrono::minutes(5));
 				state->saveUserLoginInfo();
 			}
 		}, &state).detach();

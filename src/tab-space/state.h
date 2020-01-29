@@ -40,7 +40,8 @@ namespace TabSpace {
 		std::condition_variable userLoginCv;
 		std::mutex userLoginMutex;
 		std::map<std::string, std::string> userLoginInfo;
-		std::map<std::string, std::string> userLoginTokens;
+		std::map<std::string, std::string> userLoginToken;
 		void saveUserLoginInfo();
+		std::string generateLoginToken();
 	};
 }

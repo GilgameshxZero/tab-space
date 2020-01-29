@@ -610,32 +610,134 @@ namespace TabSpace {
 
 	auto postAccountCreateCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			response->write(SimpleWeb::StatusCode::success_ok);
+			boost::property_tree::ptree propertyTree;
+			std::istringstream iss(request->content.string());
+			boost::property_tree::read_json(iss, propertyTree);
+
+			std::string username = propertyTree.get<std::string>("username");
+			std::string hashsalt = propertyTree.get<std::string>("hashsalt");
+
+			// Check if is not entirely alphanumeric/invalid.
+			if (!(std::find_if(username.begin(), username.end(),
+				[](char c) { return !(isalnum(c)); }) == username.end())) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Username must be alphanumeric.");
+				return;
+			}
+
+			// Check if username is already taken.
+			if (state.userLoginInfo.find(username) != state.userLoginInfo.end()) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Username is taken.");
+				return;
+			}
+
+			// Otherwise create account!
+			state.userLoginInfo[username] = hashsalt;
+
+			// And return a token for the client.
+			std::string token = state.generateLoginToken();
+			state.userLoginToken[token] = username;
+			response->write(SimpleWeb::StatusCode::success_ok, token);
 		};
 	}
 
 	auto postAccountLoginCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			response->write(SimpleWeb::StatusCode::success_ok);
+			boost::property_tree::ptree propertyTree;
+			std::istringstream iss(request->content.string());
+			boost::property_tree::read_json(iss, propertyTree);
+
+			std::string username = propertyTree.get<std::string>("username");
+			std::string hashsalt = propertyTree.get<std::string>("hashsalt");
+
+			// Check username exists.
+			if (state.userLoginInfo.find(username) == state.userLoginInfo.end()) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "User does not exist.");
+				return;
+			}
+
+			// Check hashsalt matches.
+			if (state.userLoginInfo[username] != hashsalt) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Password incorrect.");
+				return;
+			}
+
+			// Return a token for the client.
+			std::string token = state.generateLoginToken();
+			state.userLoginToken[token] = username;
+			response->write(SimpleWeb::StatusCode::success_ok, token);
 		};
 	}
 
 	auto postAccountLogoutCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			response->write(SimpleWeb::StatusCode::success_ok);
+			// Check that cookie exists.
+			if (request->header.find("Cookie") == request->header.end()) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookies don't exist.");
+				return;
+			}
+
+			// Parse cookies.
+			static const std::regex tokenRegex("token=([^;]*)");
+			std::string cookies = request->header.find("Cookie")->second;
+			std::smatch baseMatch;
+
+			if (std::regex_match(cookies, baseMatch, tokenRegex)) {
+				if (baseMatch.size() == 2) {
+					std::ssub_match baseSubMatch = baseMatch[1];
+					std::string base = baseSubMatch.str();
+
+					// base contains the token.
+					auto it = state.userLoginToken.find(base);
+					if (it == state.userLoginToken.end()) {
+						response->write(SimpleWeb::StatusCode::client_error_bad_request, "Token doesn't exist.");
+					} else {
+						state.userLoginToken.erase(it);
+						response->write(SimpleWeb::StatusCode::success_ok);
+					}
+				}
+			} else {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookie doesn't exist.");
+			}
 		};
 	}
 
 	auto postAccountInfoCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			response->write(SimpleWeb::StatusCode::success_ok);
+			// Check that cookie exists.
+			if (request->header.find("Cookie") == request->header.end()) {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookies don't exist.");
+				return;
+			}
+
+			// Parse cookies.
+			static const std::regex tokenRegex("token=([^;]*)");
+			std::string cookies = request->header.find("Cookie")->second;
+			std::smatch baseMatch;
+
+			if (std::regex_match(cookies, baseMatch, tokenRegex)) {
+				if (baseMatch.size() == 2) {
+					std::ssub_match baseSubMatch = baseMatch[1];
+					std::string base = baseSubMatch.str();
+
+					// base contains the token.
+					auto it = state.userLoginToken.find(base);
+					if (it == state.userLoginToken.end()) {
+						response->write(SimpleWeb::StatusCode::client_error_bad_request, "Token doesn't exist.");
+					} else {
+						// Return the username.
+						response->write(SimpleWeb::StatusCode::success_ok, it->second);
+					}
+				}
+			} else {
+				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookie doesn't exist.");
+			}
 		};
 	}
 
 	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
 		// Default.
 		// TODO: Read from command line.
-		server.config.port = 61001;
+		server.config.port = 80;
 
 		// Single-threaded. Must change buffer in serveStaticFile if this is modified.
 		server.config.thread_pool_size = 1;

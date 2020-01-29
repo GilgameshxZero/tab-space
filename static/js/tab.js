@@ -1,3 +1,41 @@
+function getCookie(name) {
+  let matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+function setCookie(name, value, options = {}) {
+
+  options = {
+    path: '/',
+    // add other defaults here if necessary
+    ...options
+  };
+
+  if (options.expires && options.expires.toUTCString) {
+    options.expires = options.expires.toUTCString();
+  }
+
+  let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+
+  for (let optionKey in options) {
+    updatedCookie += "; " + optionKey;
+    let optionValue = options[optionKey];
+    if (optionValue !== true) {
+      updatedCookie += "=" + optionValue;
+    }
+  }
+
+  document.cookie = updatedCookie;
+}
+
+function deleteCookie(name) {
+  setCookie(name, "", {
+    'max-age': -1
+  })
+}
+
 // Apply class to body and root if mobile.
 function testApplyMobileStyling() {
   // detect if mobile and apply separate styling
@@ -15,8 +53,8 @@ function sendXhr(method, url, onResponse, body) {
   xhr.onreadystatechange = () => {
     if (xhr.readyState !== 4) return;
     if (onResponse != null) {
-      if (xhr.status !== 200) onResponse(null);
-      else onResponse(xhr.responseText);
+      if (xhr.status !== 200) onResponse(xhr.responseText, xhr.status);
+      else onResponse(xhr.responseText, xhr.status);
     }
   };
   xhr.send(body);
@@ -109,6 +147,10 @@ window.addEventListener(`load`, () => {
     videoImg: document.querySelector(`.video`),
 
     lastFetchedUrl: ``,
+
+    usernameNode: document.querySelector(`.profile .callout input.username`),
+    passwordNode: document.querySelector(`.profile .callout input.password`),
+    statusNode: document.querySelector(`.profile .callout .status`),
   };
 
   // Get the tab ID from the URL.
@@ -240,23 +282,64 @@ window.addEventListener(`load`, () => {
   const saltHashPassword = (password) => {
     return md5(`${password}emt!`);
   };
-  state.profile.querySelector(`.callout input.username`).addEventListener(`click`, (event) => {
+  state.usernameNode.addEventListener(`click`, (event) => {
     event.stopPropagation();
   });
-  state.profile.querySelector(`.callout input.password`).addEventListener(`click`, (event) => {
+  state.passwordNode.addEventListener(`click`, (event) => {
     event.stopPropagation();
   });
-  state.profile.querySelector(`.callout .login`).addEventListener(`click`, (event) => {
-    event.stopPropagation();
-  });
-  state.profile.querySelector(`.callout .create`).addEventListener(`click`, (event) => {
-    event.stopPropagation();
-  });
+  const constructCreateLoginHandler = (endpoint) => {
+    return (event) => {
+      event.stopPropagation();
+      const username = state.usernameNode.value;
+      const salthash = saltHashPassword(state.passwordNode.value);
+      sendXhr(`POST`, endpoint, (responseText, responseStatus) => {
+        if (responseStatus != 200) {
+          state.statusNode.innerText = responseText;
+        } else if (responseStatus == 200) {
+          state.statusNode.innerText = "";
+          state.profile.querySelector(`.callout`).classList.add(`authenticated`);
+          state.profile.querySelector(`.callout .logged-in .username`).innerText = username;
+
+          // Save responseText cookie.
+          setCookie(`token`, responseText, { "max-age": 2147483647 });
+        }
+      }, JSON.stringify({
+        "username": username,
+        "hashsalt": salthash,
+      }));
+    };
+  };
+  state.profile.querySelector(`.callout .create`).addEventListener(`click`, constructCreateLoginHandler(`/account/create`));
+  state.profile.querySelector(`.callout .login`).addEventListener(`click`, constructCreateLoginHandler(`/account/login`));
   state.profile.querySelector(`.callout .logout`).addEventListener(`click`, (event) => {
     event.stopPropagation();
+    sendXhr(`POST`, `/account/logout`, (responseText, responseStatus) => {
+      if (responseStatus != 200) {
+        state.statusNode.innerText = responseText;
+      } else if (responseStatus == 200) {
+        state.statusNode.innerText = "";
+        state.usernameNode.value = "";
+        state.passwordNode.value = "";
+        state.profile.querySelector(`.callout`).classList.remove(`authenticated`);
+        state.profile.querySelector(`.callout .logged-in .username`).innerText = "";
+
+        // Save responseText cookie.
+        deleteCookie(`token`);
+      }
+    });
   });
 
   // Use cookie to see if we're already logged in, and enable flags accordingly.
+  sendXhr(`POST`, `/account/info`, (responseText, responseStatus) => {
+    if (responseStatus != 200) {
+      console.log(`Failed to get account info from cookie: ${responseText}`);
+    } else if (responseStatus == 200) {
+      state.statusNode.innerText = "";
+      state.profile.querySelector(`.callout`).classList.add(`authenticated`);
+      state.profile.querySelector(`.callout .logged-in .username`).innerText = responseText;
+    }
+  });
 
   // Add relevant event handlers on video.
   window.addEventListener(`mousedown`, (event) => {
