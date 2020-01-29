@@ -249,7 +249,7 @@ window.addEventListener(`load`, () => {
   };
   // Maximize resolution if first listener.
   sendXhr(`GET`, `/stream/${state.id}/listeners/count`, (responseText) => {
-    if (parseInt(responseText) == 1) {
+    if (parseInt(responseText) <= 1) {
       cloneMyResolution();
       updateBackendResolution();
     } else {
