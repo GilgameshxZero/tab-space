@@ -39,6 +39,7 @@ namespace TabSpace {
 		void startCaptureThread();
 
 		// Most recent JPEG capture of the window.
+		std::mutex dataMutex;
 		std::vector<char> jpegData;
 
 		// All threads which are reading from the JPEG capture.
@@ -51,9 +52,9 @@ namespace TabSpace {
 		bool isControlKeyDown;
 		bool isAltKeyDown;
 
-		// Sharing status.
-		bool shareOnly;  // If true, then tab can only be loaded by specified usernames.
-		std::set<std::string> shareOnlyUsernames;
+		// Sharing control.
+		std::set<std::string> sharedUsernames;
+		bool shareRestricted;
 
 		// Resolution control.
 		std::mutex resolutionMutex;

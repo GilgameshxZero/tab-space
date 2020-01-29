@@ -19,12 +19,15 @@ namespace TabSpace {
 		this->isShiftKeyDown = false;
 		this->isControlKeyDown = false;
 		this->isAltKeyDown = false;
+
+		this->shareRestricted = false;
 	}
 
 	void TabManager::startCaptureThread() {
 		static const UINT JPEG_QUALITY = 50;
 
 		// Wait until we can get the browser window.
+		this->resolutionMutex.lock();
 		this->browser = this->rootWindow->GetBrowser();
 		while (this->browser == NULL) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(17));
@@ -41,6 +44,7 @@ namespace TabSpace {
 		this->hDest = CreateCompatibleDC(this->hDc);
 		this->hBmp = CreateCompatibleBitmap(this->hDc, this->width, this->height);
 		HGDIOBJ prevBmp = SelectObject(this->hDest, this->hBmp);
+		this->resolutionMutex.unlock();
 
 		std::thread([&]() {
 			Rain::tsCout("Launched tab ", id, " on thread ", std::this_thread::get_id(), ".", Rain::CRLF);
@@ -91,9 +95,11 @@ namespace TabSpace {
 
 				// Copy IStream to buffer.
 				int bufsize = GlobalSize(hg);
-				this->jpegData.resize(bufsize);
 				LPVOID pImage = GlobalLock(hg);
+				this->dataMutex.lock();
+				this->jpegData.resize(bufsize);
 				memcpy(&this->jpegData[0], pImage, bufsize);
+				this->dataMutex.unlock();
 				GlobalUnlock(hg);
 				iStream->Release();
 

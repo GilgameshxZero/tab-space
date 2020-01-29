@@ -54,38 +54,6 @@ namespace TabSpace {
 			Rain::tsCout("Loaded ", state.userLoginInfo.size(), " users.", Rain::CRLF);
 		}
 
-		// Start a thread to periodically save the user login information.
-		std::thread([](State *state) {
-			std::mutex mtx;
-			std::unique_lock<std::mutex> lck(mtx);
-			std::cv_status waitResult = std::cv_status::timeout;
-			while (waitResult == std::cv_status::timeout) {
-				// Returns false if timeout, true if terminated.
-				// TODO: Make this wakeup on CTRL+C
-				waitResult = state->userLoginCv.wait_for(lck, std::chrono::minutes(5));
-				state->saveUserLoginInfo();
-			}
-		}, &state).detach();
-
-		// Save user information on exit.
-		SetConsoleCtrlHandler([](DWORD fdwCtrlType) -> BOOL {
-			switch (fdwCtrlType) {
-				case CTRL_C_EVENT:
-				case CTRL_CLOSE_EVENT:
-				case CTRL_LOGOFF_EVENT:
-				case CTRL_SHUTDOWN_EVENT:
-					Rain::tsCout("CTRL+C signal detected. Exiting...", Rain::CRLF);
-					std::cout.flush();
-
-					// Wait a bit for save.
-					std::this_thread::sleep_for(std::chrono::seconds(3));
-					ExitProcess(0);
-					return TRUE;
-				default:
-					return FALSE;
-			}
-		}, TRUE);
-
 		// Setup webserver.
 		SimpleWeb::Server<SimpleWeb::HTTP> httpServer;
 		initHttpServer(httpServer, state);

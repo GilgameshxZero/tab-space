@@ -157,9 +157,16 @@ namespace TabSpace {
 			// Check that the ID is valid.
 			if (state.tabManagers.find(id) == state.tabManagers.end()) {
 				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-			} else {
-				serveStaticFile(response, "/tab.html", SimpleWeb::StatusCode::success_ok);
+				return;
 			}
+
+			// Check that the tab isn't share restricted.
+			if (state.tabManagers[id]->shareRestricted) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
+			serveStaticFile(response, "/tab.html", SimpleWeb::StatusCode::success_ok);
 		};
 	}
 
@@ -170,10 +177,11 @@ namespace TabSpace {
 			// Check that the ID is valid.
 			if (state.tabManagers.find(id) == state.tabManagers.end()) {
 				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-			} else {
-				// TODO: Fix XML parsing error.
-				response->write(state.tabManagers[id]->browser->GetMainFrame()->GetURL().ToString());
+				return;
 			}
+
+			// TODO: Fix XML parsing error.
+			response->write(state.tabManagers[id]->browser->GetMainFrame()->GetURL().ToString());
 		};
 	}
 
@@ -184,10 +192,11 @@ namespace TabSpace {
 			// Check that the ID is valid.
 			if (state.tabManagers.find(id) == state.tabManagers.end()) {
 				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-			} else {
-				response->write(SimpleWeb::StatusCode::success_ok);
-				state.tabManagers[id]->browser->GetMainFrame()->LoadURL(request->content.string());
+				return;
 			}
+
+			response->write(SimpleWeb::StatusCode::success_ok);
+			state.tabManagers[id]->browser->GetMainFrame()->LoadURL(request->content.string());
 		};
 	}
 
@@ -201,6 +210,32 @@ namespace TabSpace {
 				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
 				return;
 			}
+
+			// Check that the tab isn't share restricted.
+			if (state.tabManagers[id]->shareRestricted) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
+			// Check cookies and see if a user is logged in to keep track of that.
+			/*static const std::regex tokenRegex("token=([^;]*)");
+			std::string cookies = request->header.find("Cookie")->second;
+			std::smatch baseMatch;
+
+			if (std::regex_match(cookies, baseMatch, tokenRegex)) {
+				if (baseMatch.size() == 2) {
+					std::ssub_match baseSubMatch = baseMatch[1];
+					std::string base = baseSubMatch.str();
+
+					// base contains the token.
+					state.userLoginMutex.lock();
+					auto it = state.userLoginToken.find(base);
+					if (it != state.userLoginToken.end()) {
+						state.tabManagers[id]->sharedUsernames.insert(it->second);
+					}
+					state.userLoginMutex.unlock();
+				}
+			}*/
 
 			*response << "HTTP/1.1 200" << Rain::CRLF
 				<< "Content-Type: multipart/x-mixed-replace;boundary=" << FRAME_BOUNDARY << Rain::CRLF
@@ -223,11 +258,13 @@ namespace TabSpace {
 				bool active = true;
 
 				while (active) {
+					tabManager->dataMutex.lock();
 					*response << "--" << FRAME_BOUNDARY << Rain::CRLF
 						<< "Content-Type: image/jpeg" << Rain::CRLF
 						<< "Content-Length: " << Rain::tToStr(tabManager->jpegData.size()) << Rain::CRLF
 						<< Rain::CRLF;
 					response->write(&tabManager->jpegData[0], tabManager->jpegData.size());
+					tabManager->dataMutex.unlock();
 					*response << Rain::CRLF << Rain::CRLF;
 					response->send([&](const SimpleWeb::error_code &ec) {
 						if (ec) {
@@ -248,8 +285,7 @@ namespace TabSpace {
 		};
 	}
 
-	auto getStreamCountCurried(State &state) {
-		static const std::string FRAME_BOUNDARY = "tab-space-boundary";
+	auto getStreamListenersCountCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = request->path_match[1].str();
 
@@ -259,6 +295,34 @@ namespace TabSpace {
 				return;
 			}
 			response->write(SimpleWeb::StatusCode::success_ok, Rain::tToStr(state.tabManagers[id]->listeningThreads.size()));
+		};
+	}
+
+	auto getStreamListenersDescriptionCurried(State &state) {
+		static const std::string FRAME_BOUNDARY = "tab-space-boundary";
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
+			std::string description;
+			for (std::string username : state.tabManagers[id]->sharedUsernames) {
+				description += username + ", ";
+			}
+
+			int otherUsers = state.tabManagers[id]->listeningThreads.size() - state.tabManagers[id]->sharedUsernames.size();
+			if (otherUsers == 0) {
+				description.pop_back();
+				description.pop_back();
+			} else {
+				description += "and " + Rain::tToStr(otherUsers) + " other";
+			}
+
+			response->write(SimpleWeb::StatusCode::success_ok, description);
 		};
 	}
 
@@ -519,65 +583,6 @@ namespace TabSpace {
 		};
 	}
 
-	auto getControlShareOnly(State &state) {
-		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			std::string id = request->path_match[1].str();
-			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-				return;
-			}
-			response->write(SimpleWeb::StatusCode::success_ok, state.tabManagers[id]->shareOnly ? "true" : "false");
-		};
-	}
-
-	auto postControlShareOnly(State &state) {
-		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			std::string id = request->path_match[1].str();
-			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-				return;
-			}
-			response->write(SimpleWeb::StatusCode::success_ok);
-
-			state.tabManagers[id]->shareOnly = request->content.string() == "true";
-		};
-	}
-
-	auto getControlShareOnlyUsernames(State &state) {
-		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			std::string id = request->path_match[1].str();
-			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-				return;
-			}
-			std::string responseStr;
-			for (std::string username : state.tabManagers[id]->shareOnlyUsernames) {
-				responseStr += username + " ";
-			}
-			responseStr.pop_back();
-			response->write(SimpleWeb::StatusCode::success_ok, responseStr);
-		};
-	}
-
-	auto postControlShareOnlyUsernames(State &state) {
-		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
-			std::string id = request->path_match[1].str();
-			if (state.tabManagers.find(id) == state.tabManagers.end()) {
-				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
-				return;
-			}
-			response->write(SimpleWeb::StatusCode::success_ok);
-
-			boost::property_tree::ptree propertyTree;
-			std::istringstream iss(request->content.string());
-			boost::property_tree::read_json(iss, propertyTree);
-			state.tabManagers[id]->shareOnlyUsernames.clear();
-			for (auto username : pTreeAsVector<std::string>(propertyTree, "usernames")) {
-				state.tabManagers[id]->shareOnlyUsernames.insert(username);
-			}
-		};
-	}
-
 	auto getControlResolution(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
 			std::string id = request->path_match[1].str();
@@ -608,8 +613,39 @@ namespace TabSpace {
 		};
 	}
 
+	auto getControlShareRestrict(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok, state.tabManagers[id]->shareRestricted ? "true" : "false");
+		};
+	}
+
+	auto postControlShareRestrict(State &state) {
+		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+			response->write(SimpleWeb::StatusCode::success_ok);
+			state.tabManagers[id]->shareRestricted = request->content.string() == "true";
+		};
+	}
+
 	auto postAccountCreateCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
 			boost::property_tree::ptree propertyTree;
 			std::istringstream iss(request->content.string());
 			boost::property_tree::read_json(iss, propertyTree);
@@ -637,11 +673,25 @@ namespace TabSpace {
 			std::string token = state.generateLoginToken();
 			state.userLoginToken[token] = username;
 			response->write(SimpleWeb::StatusCode::success_ok, token);
+
+			// Mark user as listening.
+			// state.tabManagers[id]->sharedUsernames.insert(username);
+
+			// Save to disk.
+			state.saveUserLoginInfo();
 		};
 	}
 
 	auto postAccountLoginCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
 			boost::property_tree::ptree propertyTree;
 			std::istringstream iss(request->content.string());
 			boost::property_tree::read_json(iss, propertyTree);
@@ -665,11 +715,22 @@ namespace TabSpace {
 			std::string token = state.generateLoginToken();
 			state.userLoginToken[token] = username;
 			response->write(SimpleWeb::StatusCode::success_ok, token);
+
+			// Mark user as listening.
+			// state.tabManagers[id]->sharedUsernames.insert(username);
 		};
 	}
 
 	auto postAccountLogoutCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
 			// Check that cookie exists.
 			if (request->header.find("Cookie") == request->header.end()) {
 				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookies don't exist.");
@@ -691,6 +752,9 @@ namespace TabSpace {
 					if (it == state.userLoginToken.end()) {
 						response->write(SimpleWeb::StatusCode::client_error_bad_request, "Token doesn't exist.");
 					} else {
+						// Unmark user as listening.
+						// state.tabManagers[id]->sharedUsernames.erase(it->second);
+
 						state.userLoginToken.erase(it);
 						response->write(SimpleWeb::StatusCode::success_ok);
 					}
@@ -703,6 +767,14 @@ namespace TabSpace {
 
 	auto postAccountInfoCurried(State &state) {
 		return [&](std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Response> response, std::shared_ptr<SimpleWeb::Server<SimpleWeb::HTTP>::Request> request) {
+			std::string id = request->path_match[1].str();
+
+			// Check that the ID is valid.
+			if (state.tabManagers.find(id) == state.tabManagers.end()) {
+				serveStaticFile(response, "/404.html", SimpleWeb::StatusCode::client_error_bad_request);
+				return;
+			}
+
 			// Check that cookie exists.
 			if (request->header.find("Cookie") == request->header.end()) {
 				response->write(SimpleWeb::StatusCode::client_error_bad_request, "Cookies don't exist.");
@@ -752,21 +824,20 @@ namespace TabSpace {
 		server.resource["^/tab/(\\w+)/url$"]["GET"] = getTabUrlCurried(state);
 		server.resource["^/tab/(\\w+)/url$"]["POST"] = postTabUrlCurried(state);
 		server.resource["^/stream/(\\w+)$"]["GET"] = getStreamCurried(state);
-		server.resource["^/stream/(\\w+)/count$"]["GET"] = getStreamCountCurried(state);
+		server.resource["^/stream/(\\w+)/listeners/count$"]["GET"] = getStreamListenersCountCurried(state);
+		server.resource["^/stream/(\\w+)/listeners/description$"]["GET"] = getStreamListenersDescriptionCurried(state);
 		server.resource["^/action/(\\w+)/mouse$"]["POST"] = postActionMouseCurried(state);
 		server.resource["^/action/(\\w+)/key$"]["POST"] = postActionKeyCurried(state);
 		server.resource["^/control/(\\w+)/back$"]["POST"] = postControlBackCurried(state);
 		server.resource["^/control/(\\w+)/forward$"]["POST"] = postControlForwardCurried(state);
 		server.resource["^/control/(\\w+)/reload$"]["POST"] = postControlReloadCurried(state);
-		server.resource["^/control/(\\w+)/share/only$"]["GET"] = getControlShareOnly(state);
-		server.resource["^/control/(\\w+)/share/only$"]["POST"] = postControlShareOnly(state);
-		server.resource["^/control/(\\w+)/share/only/usernames$"]["GET"] = getControlShareOnlyUsernames(state);
-		server.resource["^/control/(\\w+)/share/only/usernames$"]["POST"] = postControlShareOnlyUsernames(state);
 		server.resource["^/control/(\\w+)/resolution$"]["GET"] = getControlResolution(state);
 		server.resource["^/control/(\\w+)/resolution$"]["POST"] = postControlResolution(state);
-		server.resource["^/account/create$"]["POST"] = postAccountCreateCurried(state);
-		server.resource["^/account/login$"]["POST"] = postAccountLoginCurried(state);
-		server.resource["^/account/logout$"]["POST"] = postAccountLogoutCurried(state);
-		server.resource["^/account/info$"]["POST"] = postAccountInfoCurried(state);
+		server.resource["^/control/(\\w+)/share/restrict"]["GET"] = getControlShareRestrict(state);
+		server.resource["^/control/(\\w+)/share/restrict$"]["POST"] = postControlShareRestrict(state);
+		server.resource["^/account/(\\w+)/create$"]["POST"] = postAccountCreateCurried(state);
+		server.resource["^/account/(\\w+)/login$"]["POST"] = postAccountLoginCurried(state);
+		server.resource["^/account/(\\w+)/logout$"]["POST"] = postAccountLogoutCurried(state);
+		server.resource["^/account/(\\w+)/info$"]["POST"] = postAccountInfoCurried(state);
 	}
 }

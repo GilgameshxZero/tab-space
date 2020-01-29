@@ -142,13 +142,35 @@ input[type=checkbox] {
 }
 
 .controls>.share>.callout>input.link {
+  margin-bottom: calc(2 * var(--size));
+
   cursor: pointer;
 }
 
-.controls>.share>.callout>.share-only {
-  margin: calc(2 * var(--size)) auto calc(1 * var(--size));
+.controls>.share>.callout>.listeners.authenticated>.logged-in {
+  display: flex;
+}
 
-  pointer-events: initial;
+.controls>.share>.callout>.listeners.authenticated>.not-logged-in {
+  display: none;
+}
+
+.controls>.share>.callout>.listeners>.not-logged-in {
+  text-align: center;
+}
+
+.controls>.share>.callout>.listeners>.logged-in {
+  display: none;
+  flex-flow: column nowrap;
+}
+
+.controls>.share>.callout>.listeners>.logged-in>p {
+  margin: 0 auto calc(1 * var(--size));
+  text-align: center;
+}
+
+.controls>.share>.callout>.listeners>.logged-in>label {
+  margin: auto;
 }
 
 .controls>.resolution>.callout>.clone {

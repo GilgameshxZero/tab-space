@@ -192,6 +192,14 @@ window.addEventListener(`load`, () => {
     state.share.classList.toggle(`opened`);
     state.resolution.classList.remove(`opened`);
     state.profile.classList.remove(`opened`);
+
+    // Also update the status.
+    sendXhr(`GET`, `/stream/${state.id}/listeners/description`, (responseText) => {
+      state.share.querySelector(`.listeners-description`).innerText = responseText;
+    });
+    sendXhr(`GET`, `/control/${state.id}/share/restrict`, (responseText) => {
+      state.share.querySelector(`.restricted`).checked = responseText === `true`;
+    });
   });
   state.resolution.querySelector(`.icon-wrapper`).addEventListener(`click`, () => {
     state.share.classList.remove(`opened`);
@@ -213,27 +221,9 @@ window.addEventListener(`load`, () => {
     shareLink.setSelectionRange(0, 10000); // For mobile devices.
     document.execCommand(`copy`);
   });
-  const shareOnly = state.share.querySelector(`.callout>.share-only`);
-  sendXhr(`GET`, `/control/${state.id}/share/only`, (responseText) => {
-    console.log(responseText === `true`);
-    shareOnly.querySelector(`input`).checked = responseText === `true`;
-  });
-  shareOnly.addEventListener(`click`, (event) => {
+  state.share.querySelector(`.callout input[type="checkbox"]`).addEventListener(`change`, (event) => {
     event.stopPropagation();
-    sendXhr(`POST`, `/control/${state.id}/share/only`, null, event.target.checked ? `true` : `false`);
-  });
-  const shareOnlyUsernames = state.share.querySelector(`.callout>input.usernames`);
-  sendXhr(`GET`, `/control/${state.id}/share/only/usernames`, (responseText) => {
-    shareOnlyUsernames.value = responseText;
-  });
-  shareOnlyUsernames.addEventListener(`click`, (event) => {
-    event.stopPropagation();
-  });
-  shareOnlyUsernames.addEventListener(`blur`, (event) => {
-    event.stopPropagation();
-    sendXhr(`POST`, `/control/${state.id}/share/only/usernames`, null, JSON.stringify({
-      "usernames": shareOnlyUsernames.value.split(` `).filter((x) => x != ``),
-    }));
+    sendXhr(`POST`, `/control/${state.id}/share/restrict`, null, event.target.checked ? `true` : `false`);
   });
 
   // Resolution controls.
@@ -258,7 +248,7 @@ window.addEventListener(`load`, () => {
     });
   };
   // Maximize resolution if first listener.
-  sendXhr(`GET`, `/stream/${state.id}/count`, (responseText) => {
+  sendXhr(`GET`, `/stream/${state.id}/listeners/count`, (responseText) => {
     if (parseInt(responseText) == 1) {
       cloneMyResolution();
       updateBackendResolution();
@@ -279,6 +269,12 @@ window.addEventListener(`load`, () => {
   });
 
   // Profile controls.
+  const setSharingAuthenticated = () => {
+    state.share.querySelector(`.listeners`).classList.add(`authenticated`);
+  };
+  const unsetSharingAuthenticated = () => {
+    state.share.querySelector(`.listeners`).classList.remove(`authenticated`);
+  };
   const saltHashPassword = (password) => {
     return md5(`${password}emt!`);
   };
@@ -303,6 +299,8 @@ window.addEventListener(`load`, () => {
 
           // Save responseText cookie.
           setCookie(`token`, responseText, { "max-age": 2147483647 });
+
+          setSharingAuthenticated();
         }
       }, JSON.stringify({
         "username": username,
@@ -310,11 +308,11 @@ window.addEventListener(`load`, () => {
       }));
     };
   };
-  state.profile.querySelector(`.callout .create`).addEventListener(`click`, constructCreateLoginHandler(`/account/create`));
-  state.profile.querySelector(`.callout .login`).addEventListener(`click`, constructCreateLoginHandler(`/account/login`));
+  state.profile.querySelector(`.callout .create`).addEventListener(`click`, constructCreateLoginHandler(`/account/${state.id}/create`));
+  state.profile.querySelector(`.callout .login`).addEventListener(`click`, constructCreateLoginHandler(`/account/${state.id}/login`));
   state.profile.querySelector(`.callout .logout`).addEventListener(`click`, (event) => {
     event.stopPropagation();
-    sendXhr(`POST`, `/account/logout`, (responseText, responseStatus) => {
+    sendXhr(`POST`, `/account/${state.id}/logout`, (responseText, responseStatus) => {
       if (responseStatus != 200) {
         state.statusNode.innerText = responseText;
       } else if (responseStatus == 200) {
@@ -326,18 +324,22 @@ window.addEventListener(`load`, () => {
 
         // Save responseText cookie.
         deleteCookie(`token`);
+
+        unsetSharingAuthenticated();
       }
     });
   });
 
   // Use cookie to see if we're already logged in, and enable flags accordingly.
-  sendXhr(`POST`, `/account/info`, (responseText, responseStatus) => {
+  sendXhr(`POST`, `/account/${state.id}/info`, (responseText, responseStatus) => {
     if (responseStatus != 200) {
       console.log(`Failed to get account info from cookie: ${responseText}`);
     } else if (responseStatus == 200) {
       state.statusNode.innerText = "";
       state.profile.querySelector(`.callout`).classList.add(`authenticated`);
       state.profile.querySelector(`.callout .logged-in .username`).innerText = responseText;
+
+      setSharingAuthenticated();
     }
   });
 
