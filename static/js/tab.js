@@ -166,7 +166,7 @@ window.addEventListener(`load`, () => {
         state.lastFetchedUrl = responseText;
         document.querySelector(`.controls>.url>input`).value = responseText;
       }
-      setTimeout(pullUrl, 500);
+      setTimeout(pullUrl, 1000);
     });
   };
   pullUrl();
