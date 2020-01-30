@@ -827,7 +827,7 @@ namespace TabSpace {
 	void initHttpServer(SimpleWeb::Server<SimpleWeb::HTTP> &server, State &state) {
 		// Default.
 		// TODO: Read from command line.
-		server.config.port = 80;
+		server.config.port = 61001;
 
 		// Single-threaded. Must change buffer in serveStaticFile if this is modified.
 		server.config.thread_pool_size = 1;
